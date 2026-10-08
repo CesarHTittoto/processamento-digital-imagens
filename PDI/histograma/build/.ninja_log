@@ -1,0 +1,7 @@
+# ninja log v7
+20	4514	8127401284797816	CMakeFiles/motiondetector.dir/motiondetector.cpp.obj	5b8dae3b4bc10b88
+13	4535	8127401284729574	CMakeFiles/equalize.dir/equalize.cpp.obj	4dac0b910ecadef7
+27	271	8127402826781096	equalize.exe	3f51c184ca756aed
+39	272	8127402826895226	motiondetector.exe	628acbc06fd548e
+21	1719	8127402826725640	CMakeFiles/histogram.dir/histogram.cpp.obj	5ebbba12b0d28541
+1720	1919	8127402843711795	histogram.exe	ac840dbd1f3451e1

@@ -1,0 +1,220 @@
+[[cap14]]
+== Capítulo 14: Filtragem no Domínio do Espaço I
+
+.Clique para expandir os exercícios do Capítulo 14
+[%collapsible]
+====
+=== Exercício 1: Variação do Tamanho da Máscara no Filtro da Média (`convolucao2.cpp`)
+
+.Descrição do Problema
+Com base no programa `convolucao.cpp`, implementar o programa `convolucao2.cpp` para realizar o mascaramento e a filtragem no domínio do espaço utilizando o filtro da média com máscaras quadradas de dimensões 11 X 11 e 21 X 21 pixels. O objetivo é comparar analiticamente e visualmente os resultados obtidos em relação ao filtro padrão de tamanho 3 X 3 pixels.
+
+.Solução Proposta
+1. Implementar uma estrutura interativa que permita alternar dinamicamente as dimensões da máscara do filtro da média (3 X 3, 11 X 11 e 21 X 21) durante a captura contínua de frames.
+2. Construir a matriz kernel de ponto flutuante K_{N X N} cujos elementos valem 1 / N^2, garantindo o ganho unitário e a preservação do brilho médio da imagem.
+3. Executar a convolução espacial via `cv::filter2D()` sobre a imagem em escala de cinza e analisar a atenuação de frequências espaciais elevadas em função do aumento da janela do kernel.
+
+.Código Fonte (`convolucao2.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+void printMenu() {
+  std::cout << "\n=== MENU FILTRO DA MEDIA ===" << std::endl;
+  std::cout << "Teclas disponiveis para alterar a mascara:" << std::endl;
+  std::cout << "1 - Mascara da Media 3x3" << std::endl;
+  std::cout << "2 - Mascara da Media 11x11" << std::endl;
+  std::cout << "3 - Mascara da Media 21x21" << std::endl;
+  std::cout << "ESC - Sair" << std::endl;
+}
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc > 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir a camera ou ficheiro de video." << std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray, result;
+  int maskSize = 3;
+
+  printMenu();
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::Mat mask = cv::Mat::ones(maskSize, maskSize, CV_32F) / (float)(maskSize * maskSize);
+
+    cv::filter2D(gray, result, CV_32F, mask);
+    result.convertTo(result, CV_8U);
+
+    std::string text = "Filtro da Media: " + std::to_string(maskSize) + "x" + std::to_string(maskSize);
+    cv::putText(result, text, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255), 2);
+
+    cv::imshow("Original (Cinza)", gray);
+    cv::imshow("Filtrada (Convolucao)", result);
+
+    char key = (char)cv::waitKey(30);
+    if (key == 27) break;
+
+    switch (key) {
+      case '1':
+        maskSize = 3;
+        std::cout << "Mascara alterada para 3x3" << std::endl;
+        break;
+      case '2':
+        maskSize = 11;
+        std::cout << "Mascara alterada para 11x11" << std::endl;
+        break;
+      case '3':
+        maskSize = 21;
+        std::cout << "Mascara alterada para 21x21" << std::endl;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+
+O filtro da média atua como um filtro passa-baixas no domínio da frequência espacial. À medida que o tamanho da máscara N X N aumenta, amplia-se a região de vizinhança integrada para a média local de cada pixel:
+
+* **Mascara 3 X 3:** Remove ruídos de alta frequência pontuais (como ruído sal e pimenta) mantendo a nitidez geral e contornos bem definidos.
+* **Mascara 11 X 11:** Produz um efeito de borramento (*blurring*) acentuado, eliminando detalhes finos e suavizando bordas proeminentes.
+* **Mascara 21 X 21:** Provoca forte desfoque na cena, transformando objetos pequenos em borrões homogêneos e espalhando a transição de intensidade ao longo de grandes extensões de pixels.
+
+---
+
+=== Exercício 2: Correção de Profundidade de Campo com Filtro Laplaciano (`depthoffield.cpp`)
+
+.Descrição do Problema
+O efeito de profundidade de campo faz com que apenas objetos em determinado plano focal permaneçam nítidos em uma cena, deixando regiões anteriores ou posteriores desfocadas. O objetivo é implementar o programa `depthoffield.cpp` para processar uma sequência de vídeo (e.g., `vasos720p.mp4`) com variação de foco e reconstruir uma única imagem final colorida com foco estendido (onde todos os objetos fiquem focados simultaneamente).
+
+.Solução Proposta
+1. Iterar quadro a quadro sobre a sequência de vídeo e converter cada frame colorido para escala de cinza.
+2. Aplicar um filtro diferencial Laplaciano 3 X 3 (derivada de segunda ordem) sobre o frame em escala de cinza para medir a taxa de variação de alta frequência (nitidez e riqueza de bordas).
+3. Manter e atualizar continuamente uma matriz acumuladora com os maiores valores do módulo Laplaciano observados pixel a pixel ao longo do vídeo.
+4. Sempre que o valor Laplaciano do pixel atual for estritamente superior ao valor contido na matriz de máximos, substituir o pixel da imagem de saída pelo pixel colorido BGR do frame correspondente.
+
+.Código Fonte (`depthoffield.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  std::string videoPath = (argc > 1) ? argv[1] : "vasos720p.mp4";
+  cv::VideoCapture cap(videoPath);
+
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir o video: " << videoPath << std::endl;
+    return -1;
+  }
+
+  cv::Mat frame, gray, laplacian, laplacianAbs, laplacianDisplay;
+  cv::Mat maxLaplacian;  
+  cv::Mat focusImage;    
+
+  float laplacianMask[3][3] = {
+    {-1, -1, -1},
+    {-1,  8, -1},
+    {-1, -1, -1}
+  };
+  cv::Mat mask = cv::Mat(3, 3, CV_32F, laplacianMask);
+
+  bool initialized = false;
+  int frameCount = 0;
+
+  std::cout << "Processando frames do video..." << std::endl;
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) break;
+
+    frameCount++;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::filter2D(gray, laplacian, CV_32F, mask);
+    
+    laplacianAbs = cv::abs(laplacian);
+
+    if (!initialized) {
+      maxLaplacian = laplacianAbs.clone();
+      focusImage = frame.clone();
+      initialized = true;
+      continue;
+    }
+
+    for (int r = 0; r < frame.rows; r++) {
+      for (int c = 0; c < frame.cols; c++) {
+        float currentVal = laplacianAbs.at<float>(r, c);
+        float maxVal = maxLaplacian.at<float>(r, c);
+
+        if (currentVal > maxVal) {
+          maxLaplacian.at<float>(r, c) = currentVal;
+          focusImage.at<cv::Vec3b>(r, c) = frame.at<cv::Vec3b>(r, c);
+        }
+      }
+    }
+
+    cv::normalize(laplacianAbs, laplacianDisplay, 0, 255, cv::NORM_MINMAX, CV_8U);
+
+    cv::imshow("Frame Original do Video", frame);
+    cv::imshow("Imagem em Tons de Cinza", gray);
+    cv::imshow("Resposta Laplaciana (Frame Atual)", laplacianDisplay);
+    cv::imshow("Foco Estendido (Saida Final Colorida)", focusImage);
+
+    if (cv::waitKey(1) == 27) break;
+  }
+
+  std::cout << "Processamento concluido (" << frameCount << " frames analisados)." << std::endl;
+
+  cv::Mat maxLaplacianDisplay;
+  cv::normalize(maxLaplacian, maxLaplacianDisplay, 0, 255, cv::NORM_MINMAX, CV_8U);
+
+  cv::imwrite("resultado_foco_estendido.png", focusImage);
+  cv::imwrite("resultado_laplaciano_maximo.png", maxLaplacianDisplay);
+
+  cv::imshow("Mapa Acumulado de Laplacianos Maximos", maxLaplacianDisplay);
+  cv::imshow("Foco Estendido (Saida Final Colorida)", focusImage);
+  cv::waitKey(0);
+
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+
+Como o operador Laplaciano é um filtro derivativo de segunda ordem, ele responde com altas amplitudes nas transições abruptas de intensidade (bordas e detalhes finos), que correspondem exatamente às regiões focadas de um frame.
+
+* O mapa acumulado de máximos do Laplaciano (`resultado_laplaciano_maximo.png`) funciona como um mapa de relevo da nitidez da cena, destacando em tom claro os pixels onde o foco atingiu o valor ideal ao longo da gravação.
+* A imagem colorida composta (`resultado_foco_estendido.png`) consolida as melhores porções de cada frame, eliminando o efeito de variação de profundidade de campo e entregando uma cena uniformemente focada em todos os planos do espaço.
+
+.Mapa acumulado do operador Laplaciano e imagem final reconstruída
+[cols="a,a", frame=none, grid=none]
+|===
+^| .Mapa de Máximos Laplacianos
+image::convolucao/resultado_laplaciano_maximo.png[Mapa de Maximos, width=320]
+^| .Resultado Final de Foco Estendido
+image::convolucao/resultado_foco_estendido.png[Foco Estendido, width=320]
+|===
+====

@@ -1,0 +1,5 @@
+C:/PDI/histograma/build/CMakeFiles/histogram.dir
+C:/PDI/histograma/build/CMakeFiles/equalize.dir
+C:/PDI/histograma/build/CMakeFiles/motiondetector.dir
+C:/PDI/histograma/build/CMakeFiles/edit_cache.dir
+C:/PDI/histograma/build/CMakeFiles/rebuild_cache.dir

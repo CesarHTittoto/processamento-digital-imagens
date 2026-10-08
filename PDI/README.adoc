@@ -1,0 +1,37 @@
+= Processamento Digital de Imagens (PDI)
+César Henrique Tittoto Melo <cesar.tittoto.058@ufrn.edu.br>
+:toc: left
+:toc2:
+:toc-title: Sumário
+:toclevels: 2
+:docinfo: shared
+:source-highlighter: highlight.js
+:stem: latexmath
+:icons: font
+:numbered:
+:doctype: book
+:stylesdir: .
+:stylesheet: custom-dark.css
+
+= Primeira Unidade
+
+include::capitulos/cap2.adoc[]
+include::capitulos/cap3.adoc[]
+include::capitulos/cap4.adoc[]
+include::capitulos/cap5.adoc[]
+include::capitulos/cap6.adoc[]
+include::capitulos/cap7.adoc[]
+include::capitulos/cap8.adoc[]
+include::capitulos/cap9.adoc[]
+include::capitulos/cap10.adoc[]
+include::capitulos/cap11.adoc[]
+include::capitulos/cap12.adoc[]
+include::capitulos/cap13.adoc[]
+include::capitulos/cap14.adoc[]
+include::capitulos/cap15.adoc[]
+
+// = Segunda Unidade
+// _Em breve..._
+
+// = Terceira Unidade
+// _Em breve..._

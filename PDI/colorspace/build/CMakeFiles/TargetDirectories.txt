@@ -1,0 +1,3 @@
+C:/PDI/modelos/build/CMakeFiles/colorspace.dir
+C:/PDI/modelos/build/CMakeFiles/edit_cache.dir
+C:/PDI/modelos/build/CMakeFiles/rebuild_cache.dir

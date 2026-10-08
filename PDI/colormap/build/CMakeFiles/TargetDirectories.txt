@@ -1,0 +1,3 @@
+C:/PDI/colormap/build/CMakeFiles/colormap.dir
+C:/PDI/colormap/build/CMakeFiles/edit_cache.dir
+C:/PDI/colormap/build/CMakeFiles/rebuild_cache.dir

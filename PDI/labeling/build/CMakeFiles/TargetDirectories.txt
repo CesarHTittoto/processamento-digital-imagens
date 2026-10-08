@@ -1,0 +1,3 @@
+C:/PDI/labeling/build/CMakeFiles/labeling.dir
+C:/PDI/labeling/build/CMakeFiles/edit_cache.dir
+C:/PDI/labeling/build/CMakeFiles/rebuild_cache.dir

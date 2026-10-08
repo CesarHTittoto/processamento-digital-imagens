@@ -1,0 +1,108 @@
+[[cap6]]
+== Capítulo 6: Colorizando imagens cinzentas com mapas de cores
+
+.Clique para expandir os exercícios do Capítulo 6
+[%collapsible]
+====
+=== Exercício 1: Aplicação de Colormaps Pré-definidos e Implementação de Colormap Personalizado
+
+.Descrição do Problema
+O objetivo deste capítulo é explorar a pseudo-colorização de imagens em escala de cinza utilizando a função `cv::applyColorMap()` do OpenCV. Inicialmente, a imagem de teste `biel.png` é processada com 5 mapas de cores pré-definidos do OpenCV (`COLORMAP_JET`, `COLORMAP_HOT`, `COLORMAP_OCEAN`, `COLORMAP_SUMMER` e `COLORMAP_VIRIDIS`). 
+
+Em seguida, demonstra-se a criação de um **colormap personalizado** aplicando uma Look-Up Table (LUT) customizada de 256 elementos (3 canais BGR) que mapeia a escala de cinza $[0, 255]$ para um gradiente de cores exclusivo (do azul escuro passando pelo ciano/amarelo até o vermelho).
+
+.Código Fonte (`colormaps_ex.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  cv::Mat gray = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+
+  if (gray.empty()) {
+    std::cout << "Erro ao carregar a imagem biel.png!" << std::endl;
+    return -1;
+  }
+
+  // 1. Aplicação de 5 Colormaps Pré-definidos
+  cv::Mat cm_jet, cm_hot, cm_ocean, cm_summer, cm_viridis;
+
+  cv::applyColorMap(gray, cm_jet, cv::COLORMAP_JET);
+  cv::applyColorMap(gray, cm_hot, cv::COLORMAP_HOT);
+  cv::applyColorMap(gray, cm_ocean, cv::COLORMAP_OCEAN);
+  cv::applyColorMap(gray, cm_summer, cv::COLORMAP_SUMMER);
+  cv::applyColorMap(gray, cm_viridis, cv::COLORMAP_VIRIDIS);
+
+  cv::imwrite("biel_jet.png", cm_jet);
+  cv::imwrite("biel_hot.png", cm_hot);
+  cv::imwrite("biel_ocean.png", cm_ocean);
+  cv::imwrite("biel_summer.png", cm_summer);
+  cv::imwrite("biel_viridis.png", cm_viridis);
+
+  // 2. Criação de Colormap Personalizado via Look-Up Table (LUT)
+  // Criamos uma matriz 1x256 do tipo CV_8UC3
+  cv::Mat custom_lut(1, 256, CV_8UC3);
+
+  for (int i = 0; i < 256; i++) {
+    // Mapeamento de cor customizado BGR em função da intensidade i (0-255)
+    uchar b = cv::saturate_cast<uchar>(i< 128 ? i * 2 : 255 + (i - 128) * 2);   // Azul 
+    uchar g = cv::saturate_cast<uchar>(i< 128 ? i * 2 : 50 + (i - 128) * 2);   // Verde 
+    uchar r = cv::saturate_cast<uchar>(i);   // Vermelho 
+
+    custom_lut.at<cv::Vec3b>(0, i) = cv::Vec3b(b, g, r);
+  }
+
+  cv::Mat cm_custom;
+  cv::applyColorMap(gray, cm_custom, custom_lut);
+  cv::imwrite("biel_custom.png", cm_custom);
+
+  std::cout << "Todos os colormaps foram gerados e salvos com sucesso!" << std::endl;
+
+  return 0;
+}
+----
+
+.Resultados Obtidos
+
+[cols="1,1,1", frame=none, grid=none]
+|===
+| image:colormap/biel.png[Original, 256, 256]
+| image:colormap/biel_jet.png[Jet, 256, 256]
+| image:colormap/biel_hot.png[Hot, 256, 256]
+
+^| (a) Original (`biel.png`)
+^| (b) `COLORMAP_JET`
+^| (c) `COLORMAP_HOT`
+
+| image:colormap/biel_ocean.png[Ocean, 256, 256]
+| image:colormap/biel_summer.png[Summer, 256, 256]
+| image:colormap/biel_viridis.png[Viridis, 256, 256]
+
+^| (d) `COLORMAP_OCEAN`
+^| (e) `COLORMAP_SUMMER`
+^| (f) `COLORMAP_VIRIDIS`
+|===
+
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:colormap/biel.png[Original, 256, 256]
+| image:colormap/biel_custom.png[Custom LUT, 256, 256]
+
+^| (g) Imagem Original em Escala de Cinza
+^| (h) Colormap Personalizado (LUT BGR)
+|===
+
+.Discussão e Análise
+1. **Importância da Pseudo-colorização:**
+   * O sistema visual humano possui capacidade limitada para discernir tons de cinza (aproximadamente 30 a 50 níveis perceptíveis), mas consegue diferenciar milhares de nuances de cores. A conversão de intensidade de cinza em falsa cor destaca detalhes sutis em exames médicos, mapas térmicos e imagens de sensoriamento remoto.
+
+2. **Funcionamento da LUT Personalizada:**
+   * Conforme documentado no OpenCV, a função `cv::applyColorMap()` pode receber como segundo parâmetro tanto uma flag inteira referente a uma paleta pré-definida quanto uma matriz Look-Up Table de dimensão 256x1 do tipo `CV_8UC3`.
+   * No exemplo desenvolvido, a tabela calcula os canais BGR de forma segmentada para o intervalo de intensidade i de 0 a 255:
+     ** **Canal Azul (B):** Para tons escuros (i < 128), cresce linearmente de 0 a 254 (2 * i). Para tons claros (i >= 128), sofre um salto somando um offset e continua a crescer saturando em 255 através de `cv::saturate_cast`.
+     ** **Canal Verde (G):** Nos tons escuros cresce linearmente de 0 a 254 (2 * i), e nos tons claros reinicia a partir de um nível base de 50 somando 2 * (i - 128), mantendo uma contribuição média/alta nas regiões de maior intensidade.
+     ** **Canal Vermelho (R):** Acompanha diretamente a intensidade original i de 0 a 255.
+   * Essa combinação resulta num gradiente contínuo onde as regiões de baixa intensidade transitam de tons escuros para nuances de ciano e azul, enquanto as altas luzes ganham componentes mistas saturadas de vermelho, verde e azul, destacando o contraste dos elementos da imagem `biel.png`.
+====

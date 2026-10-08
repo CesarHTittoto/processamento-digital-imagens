@@ -1,0 +1,94 @@
+[[cap9]]
+== Capítulo 9: Combinação de imagens
+
+.Clique para expandir os exercícios do Capítulo 9
+[%collapsible]
+====
+=== Exercício 1: Efeito Light Painting a partir de Sequência de Vídeo
+
+.Descrição do Problema
+O objetivo deste exercício é aplicar técnicas de **combinação de imagens** para recriar o efeito fotográfico de *light painting* utilizando uma sequência de quadros extraída de um vídeo. A técnica consiste em acumular os pontos de maior luminância ao longo da sequência temporal, destacando trajetórias luminosas num ambiente escuro.
+
+Para o processamento, é utilizado o ficheiro de vídeo `teste_light_painting.mp4`. À medida que os quadros são lidos iterativamente utilizando a classe `cv::VideoCapture`, duas operações do Capítulo 9 são aplicadas de forma acumulativa:
+* **Combinação por Máximo (`cv::max`):** Compara cada pixel do acumulador com o quadro atual e preserva o valor de maior intensidade. Mantém os traços de luz bem definidos sem saturar o fundo.
+* **Operação Lógica OU (`cv::bitwise_or`):** Realiza a combinação binária bit a bit dos pixels do acumulador e do quadro atual, realçando rapidamente qualquer pixel que se acenda ao longo do tempo.
+
+.Código Fonte (`light_painting.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  // Abre o arquivo de vídeo informado ou utiliza o padrao
+  std::string video_path = (argc > 1) ? argv[1] : "teste_light_painting.mp4";
+
+  cv::VideoCapture cap(video_path);
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir o arquivo de video: " << video_path << std::endl;
+    return -1;
+  }
+
+  cv::Mat frame, frame_gray;
+  cap >> frame;
+  if (frame.empty()) {
+    std::cerr << "O video nao contem frames validos." << std::endl;
+    return -1;
+  }
+
+  // Converte o primeiro frame para tons de cinza para servir de base
+  cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+
+  // Inicializa os acumuladores para cada metodo de combinacao
+  cv::Mat light_painting_max = frame_gray.clone();
+  cv::Mat light_painting_or  = frame_gray.clone();
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) {
+      break; // Fim da leitura do video
+    }
+
+    // Converte o frame atual para tons de cinza
+    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+
+    // Combinacao 1: cv::max (Retem a maior intensidade de pixel)
+    cv::max(light_painting_max, frame_gray, light_painting_max);
+
+    // Combinacao 2: cv::bitwise_or (Operacao logica OU bit a bit)
+    cv::bitwise_or(light_painting_or, frame_gray, light_painting_or);
+  }
+
+  // Exibe as janelas com os resultados finais
+  cv::imshow("Light Painting - cv::max", light_painting_max);
+  cv::imshow("Light Painting - cv::bitwise_or", light_painting_or);
+
+  // Salva os resultados em arquivo de imagem
+  cv::imwrite("resultado_light_painting_max.png", light_painting_max);
+  cv::imwrite("resultado_light_painting_or.png", light_painting_or);
+
+  std::cout << "Processamento concluido! Imagens salvas com sucesso." << std::endl;
+
+  cv::waitKey(0);
+  return 0;
+}
+----
+
+.Resultados Obtidos
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:combinacao/resultado_light_painting_max.png[Light Painting Max, 256, 256]
+| image:combinacao/resultado_light_painting_or.png[Light Painting Bitwise OR, 256, 256]
+
+^| (a) Resultado da combinação via `cv::max`
+^| (b) Resultado da combinação via `cv::bitwise_or`
+|===
+
+.Discussão e Análise
+1. **Diferenças entre `cv::max` e `cv::bitwise_or`:**
+   * A função `cv::max` opera diretamente nos valores numéricos dos níveis de cinza (0–255), garantindo que as gradações de iluminação e contornos da luz fiquem suaves e contínuos.
+   * A operação `cv::bitwise_or` atua na representação binária de cada pixel. Em dados de 8 bits em escala de cinza, o agrupamento de bits pode gerar pequenos artefatos em regiões com variações sutis de tom, embora seja extremamente eficiente para destacar qualquer ocorrência de luz sobre o fundo escuro.
+2. **Desempenho no Processamento de Vídeo:**
+   * Ao acumular o resultado quadro a quadro sem armazenar todos os frames em memória RAM, o programa mantém uma pegada de memória constante durante todo o processamento do arquivo `.mp4`.
+====

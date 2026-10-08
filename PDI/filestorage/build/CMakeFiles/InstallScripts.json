@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"C:/PDI/filestorage/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

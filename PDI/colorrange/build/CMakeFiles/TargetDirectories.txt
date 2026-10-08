@@ -1,0 +1,3 @@
+C:/PDI/colorrange/build/CMakeFiles/colorrange.dir
+C:/PDI/colorrange/build/CMakeFiles/edit_cache.dir
+C:/PDI/colorrange/build/CMakeFiles/rebuild_cache.dir

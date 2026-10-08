@@ -1,0 +1,104 @@
+[[cap5]]
+== Capítulo 5: Serialização de dados em ponto flutuante via FileStorage
+
+.Clique para expandir os exercícios do Capítulo 5
+[%collapsible]
+====
+=== Exercício 1: Geração, Serialização e Comparação de Senóide 2D (YML vs PNG)
+
+.Descrição do Problema
+O objetivo deste exercício é gerar uma imagem sintética de dimensões 256x256 pixels contendo uma senoide horizontal de 4 períodos e amplitude 127 (deslocada por um offset de 127 para que a faixa teórica ocupe de 0 a 254). 
+
+A matriz com valores em ponto flutuante (`CV_32F`) é gravada em disco no formato **YML** (utilizando a classe `cv::FileStorage`) e convertida/salva no formato **PNG** (imagem de 8 bits por canal, `CV_8U`). Em seguida, ambas as imagens são recarregadas para extrair uma mesma linha horizontal, calculando a diferença absoluta ponto a ponto e gerando um gráfico com o **Gnuplot**.
+
+.Código Fonte (`senoide.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <opencv2/opencv.hpp>
+
+int main() {
+  int width = 256;
+  int height = 256;
+  int periodos = 4;
+  float amplitude = 127.0f;
+  float offset = 127.0f;
+
+  cv::Mat image(height, width, CV_32FC1);
+
+  // Geração da senoide horizontal
+  for (int j = 0; j < width; j++) {
+    float val = offset + amplitude * std::sin(2.0f * M_PI * periodos * j / width);
+    for (int i = 0; i < height; i++) {
+      image.at<float>(i, j) = val;
+    }
+  }
+
+  // 1. Gravação em formato YML (Ponto Flutuante)
+  cv::FileStorage fs("senoide.yml", cv::FileStorage::WRITE);
+  fs << "mat" << image;
+  fs.release();
+
+  // 2. Normalização e Gravação em formato PNG (8 bits inteiros)
+  cv::Mat image8u;
+  image.convertTo(image8u, CV_8U);
+  cv::imwrite("senoide.png", image8u);
+
+  // --- Leitura e Comparação ---
+  cv::Mat img_yml;
+  cv::FileStorage fs_read("senoide.yml", cv::FileStorage::READ);
+  fs_read["mat"] >> img_yml;
+  fs_read.release();
+
+  cv::Mat img_png = cv::imread("senoide.png", cv::IMREAD_GRAYSCALE);
+
+  int mid_row = height / 2;
+  std::ofstream fdiff("diferenca_linha.txt");
+
+  for (int j = 0; j < width; j++) {
+    float val_yml = img_yml.at<float>(mid_row, j);
+    float val_png = static_cast<float>(img_png.at<uchar>(mid_row, j));
+    float diff = std::abs(val_yml - val_png);
+
+    fdiff << j << " " << val_yml << " " << val_png << " " << diff << "\n";
+  }
+
+  fdiff.close();
+  std::cout << "Processamento concluído. Arquivo diferenca_linha.txt gerado com sucesso!" << std::endl;
+
+  return 0;
+}
+----
+
+.Script do Gnuplot (`plot_diff.gp`)
+[source,gnuplot]
+----
+set title "Diferença do Perfil de Linha: YML (32F) vs PNG (8U)"
+set xlabel "Coluna (X)"
+set ylabel "Diferença Absoluta |YML - PNG|"
+set grid
+set yrange [0:1]
+plot 'diferenca_linha.txt' using 1:4 with lines title "Erro de Quantização"
+----
+
+.Resultados Obtidos
+[cols="1,1", frame=none, grid=none]
+|===
+| image:filestorage/senoide.png[Senoide Gerada em PNG, 256, 256]
+| image:filestorage/plot_diferenca.png[Gráfico da Diferença, 320, 240]
+
+^| (a) Imagem visual da senoide gerada (`senoide.png`)
+^| (b) Erro de quantização ao longo da linha central (`plot_diferenca.png`)
+|===
+
+.Discussão e Análise
+1. **O que é observado:**
+   * O gráfico da diferença oscila periodicamente entre 0.0 e no máximo 0.5 unidades de intensidade ao longo de cada período da senoide.
+   * O arquivo **YML** retém os valores contínuos exatos como números de ponto flutuante (`float`), enquanto o **PNG** trunca e arredonda esses valores para números inteiros sem sinal de 8 bits (intervalo de 0 a 255).
+
+2. **Por que isso acontece?**
+   * **Truncamento de Quantização:** A conversão de `CV_32F` para `CV_8U` discretiza a função contínua seno em níveis inteiros discretos. O erro possui um valor máximo teórico de exatamente 0.5.
+   * **Precisão Numérica vs Formato de Armazenamento:** Imagens em formato PNG convencional não foram projetadas para armazenar matrizes de dados numéricos científicos de ponto flutuante sem perda. Para preservar a precisão completa de processamento (como transformadas de Fourier, mapas de profundidade e derivadas de imagem), utiliza-se a serialização de dados como YML/XML/JSON (`cv::FileStorage`) ou formatos de imagem HDR/ponto flutuante de alta profundidade.
+====

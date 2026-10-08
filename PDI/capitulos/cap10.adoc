@@ -1,0 +1,79 @@
+[[cap10]]
+== Capítulo 10: Decomposição em planos de bits e esteganografia
+
+.Clique para expandir os exercícios do Capítulo 10
+[%collapsible]
+====
+=== Exercício 1: Decodificação de Imagem Esteganografada
+
+.Descrição do Problema
+O objetivo deste exercício é implementar o processo inverso da esteganografia em planos de bits. Dada uma imagem contendo outra oculta em seus bits menos significativos (como a imagem `desafio-esteganografia.png`), o programa deve extrair os nbits (no caso, 3 bits) menos significativos de cada pixel e deslocá-los 8 - nbits posições para a esquerda. 
+
+Desta forma, a informação oculta passa a ocupar os bits mais significativos da nova imagem, tornando o conteúdo recuperado visível na escala de brilho completa.
+
+.Código Fonte (`esteganografia-recuperar.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    std::cout << "Uso: " << argv[0] << " <imagem_codificada.png>" << std::endl;
+    return -1;
+  }
+
+  // Carrega a imagem codificada vinda da linha de comando
+  cv::Mat imagemEsteganografada = cv::imread(argv[1], cv::IMREAD_COLOR);
+
+  if (imagemEsteganografada.empty()) {
+    std::cout << "Erro ao carregar a imagem: " << argv[1] << std::endl;
+    return -1;
+  }
+
+  cv::Mat imagemRecuperada = imagemEsteganografada.clone();
+  cv::Vec3b valEsteg, valRec;
+
+  int nbits = 3; // Numero de bits ocultos na codificacao
+
+  for (int i = 0; i < imagemEsteganografada.rows; i++) {
+    for (int j = 0; j < imagemEsteganografada.cols; j++) {
+      valEsteg = imagemEsteganografada.at<cv::Vec3b>(i, j);
+
+      // Desloca os LSBs para os MSBs em cada canal BGR
+      for (int c = 0; c < 3; c++) {
+        valRec[c] = (valEsteg[c] << (8 - nbits)) & 0xFF;
+      }
+
+      imagemRecuperada.at<cv::Vec3b>(i, j) = valRec;
+    }
+  }
+
+  // Exibe e salva o resultado da imagem oculta recuperada
+  cv::imshow("Imagem Recuperada", imagemRecuperada);
+  cv::imwrite("imagem_recuperada.png", imagemRecuperada);
+
+  std::cout << "Imagem recuperada com sucesso!" << std::endl;
+  cv::waitKey(0);
+
+  return 0;
+}
+----
+
+.Resultados Obtidos
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:bitplanes/desafio-esteganografia.png[Imagem Codificada, 300, 400]
+| image:bitplanes/imagem_recuperada.png[Imagem Recuperada, 300, 400]
+
+^| (a) Imagem Resultante da Esteganografia (`desafio-esteganografia.png`)
+^| (b) Imagem Oculta Extraída (`imagem_recuperada.png`)
+|===
+
+.Discussão e Análise
+1. **Recuperação de Informação Oculta:**
+   * A operação de bitshift à esquerda (`<< 5`) move os 3 bits menos significativos da imagem portadora para as posições mais significativas (MSB) da imagem final.
+2. **Qualidade e Perda de Resolução de Tonalidade:**
+   * Como a imagem oculta foi armazenada utilizando apenas 3 bits por canal de cor, a imagem recuperada possui no máximo 2^3 = 8 níveis de tonalidades por canal, o que gera uma pequena quantização visível (efeito de posterização/falso contorno), embora o conteúdo principal permaneça perfeitamente reconhecível.
+====

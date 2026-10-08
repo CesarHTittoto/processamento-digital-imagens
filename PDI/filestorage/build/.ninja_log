@@ -1,0 +1,5 @@
+# ninja log v7
+6	230	8122479797026050	build.ninja	5dc10590a30cdb93
+6	230	8122479797026050	C:/PDI/filestorage/build/cmake_install.cmake	5dc10590a30cdb93
+33	1984	8122479797696380	CMakeFiles/senoide.dir/senoide.cpp.obj	a97a40eca76fdf08
+1986	2194	8122479817234396	senoide.exe	c265801b4943730e

@@ -1,0 +1,3 @@
+C:/PDI/combinacao/build/CMakeFiles/combinacao.dir
+C:/PDI/combinacao/build/CMakeFiles/edit_cache.dir
+C:/PDI/combinacao/build/CMakeFiles/rebuild_cache.dir

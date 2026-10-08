@@ -1,0 +1,5 @@
+C:/PDI/convolucao/build/CMakeFiles/convolucao.dir
+C:/PDI/convolucao/build/CMakeFiles/convolucao2.dir
+C:/PDI/convolucao/build/CMakeFiles/depthoffield.dir
+C:/PDI/convolucao/build/CMakeFiles/edit_cache.dir
+C:/PDI/convolucao/build/CMakeFiles/rebuild_cache.dir

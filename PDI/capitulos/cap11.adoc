@@ -1,0 +1,140 @@
+[[cap11]]
+== Capítulo 11: Preenchimento de regiões
+
+.Clique para expandir os exercícios do Capítulo 11
+[%collapsible]
+====
+=== Exercício 1: Limitação do Algoritmo de Rotulação
+
+.Descrição do Problema
+No programa `labeling.cpp`, o valor do contador de objetos é atribuído diretamente aos pixels da imagem em escala de cinza de 8 bits (`CV_8UC1`). Como essa estrutura suporta apenas valores no intervalo [0, 255], se a cena contiver mais de 255 objetos, o 256º objeto provocará um *overflow* de tipo, reiniciando o rótulo em 0. Isso faz com que objetos subsequentes sejam interpretados como fundo, corrompendo o processo de rotulação.
+
+.Solução Proposta
+Para solucionar a limitação:
+
+1. Converter a matriz de trabalho para uma profundidade de 16 ou 32 bits (`CV_32SC1`), permitindo rotular até 2^{31}-1 objetos distintos.
+2. Utilizar a função `cv::connectedComponents()`, que já lida nativamente com matrizes de rótulos de 32 bits inteiros.
+
+=== Exercício 2: Contagem de Bolhas com e sem Buracos Internos
+
+.Descrição do Problema
+Aprimorar o algoritmo de contagem para:
+
+1. Ignorar e remover todas as bolhas que tocam as bordas da imagem (sem pressupor se possuem ou não buracos).
+2. Classificar e contar separadamente as bolhas que possuem **um ou mais buracos internos** e as que **não possuem buracos**.
+
+.Código Fonte (`labeling.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  std::string filename = (argc > 1) ? argv[1] : "..\\bolhas.png";
+  cv::Mat image = cv::imread(filename, cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cerr << "Erro ao carregar a imagem: " << filename << std::endl;
+    return -1;
+  }
+
+  int width = image.cols;
+  int height = image.rows;
+
+  // 1. Eliminar bolhas que tocam as bordas da imagem
+  for (int j = 0; j < width; j++) {
+    if (image.at<uchar>(0, j) == 255)
+      cv::floodFill(image, cv::Point(j, 0), 0);
+    if (image.at<uchar>(height - 1, j) == 255)
+      cv::floodFill(image, cv::Point(j, height - 1), 0);
+  }
+  for (int i = 0; i < height; i++) {
+    if (image.at<uchar>(i, 0) == 255)
+      cv::floodFill(image, cv::Point(0, i), 0);
+    if (image.at<uchar>(i, width - 1) == 255)
+      cv::floodFill(image, cv::Point(width - 1, i), 0);
+  }
+
+  // 2. Preencher o fundo externo com a cor 1 para isolar o fundo dos buracos (que continua 0)
+  cv::floodFill(image, cv::Point(0, 0), 1);
+
+  int bolhas_sem_buraco = 0;
+  int bolhas_com_buraco = 0;
+
+  // 3. Rotulação preliminar das bolhas
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      if (image.at<uchar>(i, j) == 255) {
+        cv::floodFill(image, cv::Point(j, i), 254);
+      }
+    }
+  }
+
+  // 4. Identificação dos buracos (pixels com tom 0)
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      if (image.at<uchar>(i, j) == 0) {
+        cv::floodFill(image, cv::Point(j, i), 253); 
+        if (j > 0 && image.at<uchar>(i, j - 1) == 254) {
+          cv::floodFill(image, cv::Point(j - 1, i), 252);
+        } else if (i > 0 && image.at<uchar>(i - 1, j) == 254) {
+          cv::floodFill(image, cv::Point(j, i - 1), 252);
+        }
+      }
+    }
+  }
+
+  // 5. Contagem final das bolhas sem buraco (254) e com buraco (252)
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++) {
+      uchar val = image.at<uchar>(i, j);
+      if (val == 254) {
+        bolhas_sem_buraco++;
+        cv::floodFill(image, cv::Point(j, i), 100);
+      } else if (val == 252) {
+        bolhas_com_buraco++;
+        cv::floodFill(image, cv::Point(j, i), 200);
+      }
+    }
+  }
+
+  std::cout << "--- Resultado do Processamento ---" << std::endl;
+  std::cout << "Total de bolhas validas: " << (bolhas_sem_buraco + bolhas_com_buraco) << std::endl;
+  std::cout << "Bolhas sem buracos: " << bolhas_sem_buraco << std::endl;
+  std::cout << "Bolhas com buracos: " << bolhas_com_buraco << std::endl;
+
+  cv::imwrite("resultado_labeling.png", image);
+  return 0;
+}
+----
+
+.Resultados Obtidos
+
+Saída gerada no terminal durante a execução do algoritmo:
+
+[source,text]
+----
+--- Resultado do Processamento ---
+Total de bolhas validas: 21
+Bolhas sem buracos: 14
+Bolhas com buracos: 7
+----
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:labeling/bolhas.png[Imagem Original, 256, 256]
+| image:labeling/resultado_labeling.png[Resultado da Rotulação, 256, 256]
+
+^| (a) Imagem Original (`bolhas.png`)
+^| (b) Resultado Final do Processamento
+|===
+
+.Discussão e Análise
+1. **Tratamento das Bordas:**
+   * A eliminação das bolhas nas bordas garante a precisão do algoritmo, pois objetos cortados pelas margens poderiam ter buracos ocultos fora da área visível do frame.
+2. **Separação de Fundos:**
+   * Alterar a cor do fundo de 0 para 1 permite distinguir o fundo geral dos buracos internos de forma precisa, já que qualquer pixel com valor 0 remanescente após o primeiro `floodFill` pertence obrigatoriamente ao interior de uma bolha.
+3. **Análise Quantitativa:**
+   * Do conjunto total analisado na cena, 11 bolhas conectadas às bordas foram totalmente eliminadas sem contagem prévia.
+   * Das **21 bolhas válidas** restantes, o algoritmo classificou corretamente **14 bolhas sem buracos** (preenchidas em tom de cinza intermediário) e **7 bolhas com buracos** (preenchidas em tom de cinza mais claro).
+====

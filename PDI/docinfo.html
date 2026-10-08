@@ -1,0 +1,68 @@
+<style>
+  /* Layout do Sumário Lateral (TOC2) */
+  /* 1. Definição da largura da barra lateral (TOC) */
+    #toc.toc2 {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 20em !important; /* Ajusta a largura do menu lateral */
+    height: 100% !important;
+    overflow-y: auto !important;
+    background-color: #1a1a1a !important;
+    border-right: 1px solid #2e2e2e !important;
+    padding: 1.5em 1em !important;
+    box-sizing: border-box !important;
+    z-index: 1000 !important;
+    }
+
+    /* 2. Recuo do conteúdo para dar o espaço necessário à direita do TOC */
+    #header, #content, #footnotes, #footer {
+    max-width: 65em !important;
+    margin-left: 24em !important; /* Cria o espaço em branco/vazio entre o TOC e o texto */
+    padding-left: 2em !important;   /* Espaçamento interno adicional */
+    padding-right: 2em !important;
+    }
+
+    /* 3. Ajuste para telas menores (Responsividade) */
+    @media screen and (max-width: 1280px) {
+    #header, #content, #footnotes, #footer {
+        margin-left: 22em !important;
+    }
+    }
+
+  /* Fundo da Página e Cores de Texto */
+  body {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+  }
+
+  #header, #content, #footnotes, #footer {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+  }
+
+  /* Cores de Títulos */
+  h1, h2, h3, h4, h5, h6, .subheader, #toctitle, .title, h1.title {
+    color: #62a1f8 !important;
+  }
+
+  /* Links do Sumário */
+  #toc.toc2 a {
+    color: #4183c4 !important;
+  }
+
+  #toc.toc2 a:hover {
+    color: #63a0e3 !important;
+  }
+
+  /* Blocos de Código e Caixas Expansíveis */
+  details, summary, pre, code {
+    background-color: #1e1e1e !important;
+    color: #f8f8f2 !important;
+    border-color: #333333 !important;
+  }
+
+  hr {
+    border-color: #2e2e2e !important;
+  }
+</style>

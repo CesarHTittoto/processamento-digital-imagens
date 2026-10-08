@@ -1,0 +1,156 @@
+[[cap3]]
+== Capítulo 3: Tratando arquivos de vídeo
+
+.Clique para expandir os exercícios do Capítulo 3
+[%collapsible]
+====
+=== Exercício 1: Conversão e Gravação de Vídeo em Tons de Cinza
+
+.Descrição do Problema
+O objetivo deste exercício é capturar um fluxo de vídeo a partir de um arquivo de entrada, converter cada quadro para a escala de cinza com `cv::cvtColor` e salvá-lo em um novo arquivo no formato `.mp4`. O parâmetro `isColor` do construtor `cv::VideoWriter` é configurado como `false` para indicar a gravação de imagens monocromáticas de apenas 1 canal.
+
+.Código Fonte
+[source,cpp]
+----
+#ifndef _REENTRANT
+#define _REENTRANT
+#endif
+
+#include <mutex>
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    std::cout << "Uso: ./videocinza <caminho_do_video>" << std::endl;
+    return -1;
+  }
+
+  cv::VideoCapture cap(argv[1]);
+  if (!cap.isOpened()) {
+    std::cout << "Erro ao abrir o vídeo!" << std::endl;
+    return -1;
+  }
+
+  double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  double fps = cap.get(cv::CAP_PROP_FPS);
+
+  if (fps <= 0) fps = 30.0;
+
+  cv::Size frameSize(static_cast<int>(width), static_cast<int>(height));
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+
+  cv::VideoWriter out("output_cinza.mp4", fourcc, fps, frameSize, false);
+
+  if (!out.isOpened()) {
+    std::cout << "Erro ao criar o arquivo de saída de vídeo!" << std::endl;
+    return -1;
+  }
+
+  cv::namedWindow("Vídeo em Tons de Cinza", cv::WINDOW_AUTOSIZE);
+
+  cv::Mat frame, frame_gray;
+  int counter = 0;
+
+  while (cap.read(frame)) {
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+    out << frame_gray;
+
+    cv::imshow("Vídeo em Tons de Cinza", frame_gray);
+
+    counter++;
+
+    char key = static_cast<char>(cv::waitKey(30));
+    if (key == 27) break;
+  }
+
+  cap.release();
+  out.release();
+  cv::destroyAllWindows();
+
+  return 0;
+}
+----
+
+.Resultados Obtidos
+video::video/output_cinza_h264.mp4[width=640, height=360, opts="controls"]
+
+'''
+
+=== Exercício 2: Gravação de Vídeo com Efeito Negativo
+
+.Descrição do Problema
+Modificar o processamento para aplicar a inversão de intensidade (`bitwise_not`) em cada canal do quadro antes de gravá-lo no arquivo de saída `.mp4`. Como a imagem mantém os 3 canais de cor (BGR), o parâmetro `isColor` do `cv::VideoWriter` é mantido como `true`.
+
+.Código Fonte
+[source,cpp]
+----
+#ifndef _REENTRANT
+#define _REENTRANT
+#endif
+
+#include <mutex>
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    std::cout << "Uso: ./videonegativo <caminho_do_video>" << std::endl;
+    return -1;
+  }
+
+  cv::VideoCapture cap(argv[1]);
+  if (!cap.isOpened()) {
+    std::cout << "Erro ao abrir o vídeo!" << std::endl;
+    return -1;
+  }
+
+  double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  double fps = cap.get(cv::CAP_PROP_FPS);
+
+  if (fps <= 0) fps = 30.0;
+
+  cv::Size frameSize(static_cast<int>(width), static_cast<int>(height));
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+
+  cv::VideoWriter out("output_negativo.mp4", fourcc, fps, frameSize, true);
+
+  if (!out.isOpened()) {
+    std::cout << "Erro ao criar o arquivo de saída de vídeo!" << std::endl;
+    return -1;
+  }
+
+  cv::namedWindow("Vídeo Negativo", cv::WINDOW_AUTOSIZE);
+
+  cv::Mat frame, frame_neg;
+  int counter = 0;
+
+  while (cap.read(frame)) {
+    if (frame.empty()) break;
+
+    cv::bitwise_not(frame, frame_neg);
+    out << frame_neg;
+
+    cv::imshow("Vídeo Negativo", frame_neg);
+
+    counter++;
+
+    char key = static_cast<char>(cv::waitKey(30));
+    if (key == 27) break;
+  }
+
+  cap.release();
+  out.release();
+  cv::destroyAllWindows();
+
+  return 0;
+}
+----
+
+.Resultados Obtidos
+video::video/output_negativo_h264.mp4[width=640, height=360, opts="controls"]
+====

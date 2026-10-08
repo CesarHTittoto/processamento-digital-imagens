@@ -1,0 +1,188 @@
+[[cap12]]
+== Capítulo 11: Histogramas e Aplicações
+
+.Clique para expandir os exercícios do Capítulo 11
+[%collapsible]
+====
+=== Exercício 1: Equalização de Histograma em Tempo Real (`equalize.cpp`)
+
+.Descrição do Problema
+Desenvolver um programa em C++ e OpenCV que capture frames continuamente a partir de uma fonte de vídeo ou câmera em escala de cinza e realize a equalização do histograma antes de exibir a imagem final. O objetivo é avaliar a redistribuição de luminância e o ganho de contraste em ambientes com iluminações variadas e desafiadoras (subexposição ou superexposição).
+
+.Solução Proposta
+1. Capturar o frame da câmera/vídeo e convertê-lo para escala de cinza de 8 bits (`CV_8UC1`) via `cv::cvtColor()`.
+2. Aplicar a equalização de histograma na matriz de tons de cinza utilizando a função `cv::equalizeHist()`.
+3. Calcular e plotar lado a lado os histogramas das imagens **Original** e **Equalizada** (utilizando 64 *bins*) para permitir a comparação quantitativa do perfil de distribuição de intensidades.
+
+.Código Fonte (`equalize.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+void drawHistogram(const cv::Mat& hist, cv::Mat& histImg, cv::Scalar color) {
+  histImg.setTo(cv::Scalar(0, 0, 0));
+  int nbins = hist.rows;
+  int histh = histImg.rows;
+
+  cv::Mat histNorm;
+  cv::normalize(hist, histNorm, 0, histh, cv::NORM_MINMAX, -1, cv::Mat());
+
+  for (int i = 0; i < nbins; i++) {
+    cv::line(histImg,
+             cv::Point(i, histh),
+             cv::Point(i, histh - cvRound(histNorm.at<float>(i))),
+             color, 1, 8, 0);
+  }
+}
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc > 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir a fonte de video/camera." << std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray, equalized;
+  cv::Mat histOriginal, histEqualized;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float* histrange = {range};
+
+  int histw = nbins;
+  int histh = nbins / 2;
+  cv::Mat histImgOrig(histh, histw, CV_8UC3, cv::Scalar(0, 0, 0));
+  cv::Mat histImgEq(histh, histw, CV_8UC3, cv::Scalar(0, 0, 0));
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::equalizeHist(gray, equalized);
+
+    cv::calcHist(&gray, 1, 0, cv::Mat(), histOriginal, 1, &nbins, &histrange, true, false);
+    cv::calcHist(&equalized, 1, 0, cv::Mat(), histEqualized, 1, &nbins, &histrange, true, false);
+
+    drawHistogram(histOriginal, histImgOrig, cv::Scalar(0, 255, 255));
+    drawHistogram(histEqualized, histImgEq, cv::Scalar(0, 255, 0));
+
+    cv::Mat displayOrig, displayEq;
+    cv::cvtColor(gray, displayOrig, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(equalized, displayEq, cv::COLOR_GRAY2BGR);
+
+    histImgOrig.copyTo(displayOrig(cv::Rect(0, 0, histw, histh)));
+    histImgEq.copyTo(displayEq(cv::Rect(0, 0, histw, histh)));
+
+    cv::imshow("Original (Cinza)", displayOrig);
+    cv::imshow("Equalizada", displayEq);
+
+    if (cv::waitKey(30) == 27) break;
+  }
+
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+* **Redistribuição de Luminância (Ambiente Muito Iluminado):** Em cenas superexpostas, onde a maioria dos pixels está concentrada na extremidade superior da escala de cinza (próximo de 255), a função de distribuição acumulada estica esses valores claros ao longo de todo o espectro [0, 255], forçando o reapeamento de parte das intensidades para tons médios e escuros.
+* **Aumento do Contraste e Detalhes:** A expansão da faixa dinâmica permite destacar sutis variações de textura e contornos em regiões claras que antes pareciam "estouradas" ou uniformemente brancas.
+* **Artefatos e Ruído de Quantização:** Como as intensidades originais estavam comprimidas num intervalo muito estreito de tons claros, o estiramento pode causar descontinuidades visíveis no histograma (*comb-like histogram*) e evidenciar ruídos em áreas de transição suave.
+
+---
+
+=== Exercício 2: Detector de Movimento Baseado em Histogramas (`motiondetector.cpp`)
+
+.Descrição do Problema
+Implementar um sistema de detecção de movimento em tempo real que calcule continuamente o histograma dos frames capturados e o compare com o histograma do frame imediatamente anterior. Quando a métrica de divergência ultrapassar um limiar preestabelecido, um alarme visual deve ser acionado na interface.
+
+.Solução Proposta
+1. Calcular o histograma em escala de cinza para o frame atual e normalizá-lo para a faixa [0, 1].
+2. Comparar o histograma atual com o histograma do frame anterior utilizando a métrica Chi-Quadrado (`cv::HISTCMP_CHISQR`), via função `cv::compareHist()`.
+3. Caso a variação do histograma supere o limiar configurado (e.g., 50.0), desenhar um alerta visual (`ALARM: MOVIMENTO DETECTADO!`) e uma moldura de sinalização sobre a imagem.
+
+.Código Fonte (`motiondetector.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc > 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir a fonte de video/camera." << std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray;
+  cv::Mat histAtual, histAnterior;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float* histrange = {range};
+
+  // Limiar de sensibilidade usando a metrica Chi-Quadrado
+  double threshold_chisqr = 50.0;
+  bool firstFrame = true;
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::calcHist(&gray, 1, 0, cv::Mat(), histAtual, 1, &nbins, &histrange, true, false);
+    cv::normalize(histAtual, histAtual, 0, 1, cv::NORM_MINMAX, -1, cv::Mat());
+
+    if (!firstFrame) {
+      // Comparacao de histogramas usando Chi-Quadrado
+      double diff = cv::compareHist(histAtual, histAnterior, cv::HISTCMP_CHISQR);
+
+      if (diff > threshold_chisqr) {
+        cv::putText(frame, "ALARM: MOVIMENTO DETECTADO!", cv::Point(20, 50),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 255), 2);
+        
+        cv::rectangle(frame, cv::Point(0, 0), cv::Point(frame.cols - 1, frame.rows - 1),
+                      cv::Scalar(0, 0, 255), 5);
+      }
+
+      std::cout << "Diferenca de Histograma (Chi-Sqr): " << diff << std::endl;
+    } else {
+      firstFrame = false;
+    }
+
+    histAtual.clone().copyTo(histAnterior);
+
+    cv::imshow("Detector de Movimento", frame);
+
+    if (cv::waitKey(30) == 27) break;
+  }
+
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+1. **Escolha da Métrica:** A distância Chi-Quadrado (`cv::HISTCMP_CHISQR`) mostrou-se bastante adequada para a detecção de movimento, pois atribui um peso significativamente maior a mudanças na distribuição de valores de pixels entre quadros consecutivos.
+2. **Robustez a Pequenas Oscilações:** Ajustar o limiar para um valor adequado (como 50.0) evita que pequenas oscilações de iluminação global ou ruídos do sensor da câmera disparem falsos positivos.
+3. **Desempenho:** Por comparar distribuições globais de 64 *bins* em vez de realizar operações pixel a pixel, a abordagem baseada em histograma consome pouquíssimo recurso computacional, sendo ideal para sistemas embarcados e monitoramento leve.
+====

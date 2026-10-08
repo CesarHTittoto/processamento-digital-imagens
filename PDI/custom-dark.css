@@ -1,0 +1,62 @@
+/* Fundo da página e texto principal */
+body {
+    background-color: #2b2b2b !important;
+    color: #e0e0e0 !important;
+}
+
+/* Painel principal de conteúdo */
+#header, #content, #footnotes, #footer {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Sidebar lateral (Sumário/TOC2) */
+#toc.toc2 {
+    background-color: #1a1a1a !important;
+    border-right-color: #2e2e2e !important;
+}
+
+#toc.toc2 #toctitle {
+    color: #62a1f8 !important; /* Cor terracota original do título do Sumário */
+}
+
+/* Mantém os links do sumário visíveis */
+#toc.toc2 a {
+    color: #4183c4 !important;
+}
+
+#toc.toc2 a:hover {
+    color: #63a0e3 !important;
+}
+
+/* Títulos principais mantendo a cor e fonte original */
+h1, h2, h3, h4, h5, h6, .subheader, .sidebarblock>.content>.title {
+    color: #62a1f8 !important; /* Terracota padrão do Asciidoctor */
+}
+
+#toctitle, .title, h1.title {
+    color: #62a1f8 !important;
+}
+
+/* Cor do texto do autor/e-mail */
+.details, #author, #email, #revdate {
+    color: #a0a0a0 !important;
+}
+
+/* Caixas retráteis (Collapsible / details) e blocos de código */
+details, summary {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+}
+
+pre, code {
+    background-color: #646363 !important;
+    color: #f8f8f2 !important;
+    border-color: #646363 !important;
+}
+
+/* Linhas divisórias */
+hr {
+    border-color: #2e2e2e !important;
+}

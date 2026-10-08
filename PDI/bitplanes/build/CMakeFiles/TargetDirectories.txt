@@ -1,0 +1,3 @@
+C:/PDI/bitplanes/build/CMakeFiles/bitplanes.dir
+C:/PDI/bitplanes/build/CMakeFiles/edit_cache.dir
+C:/PDI/bitplanes/build/CMakeFiles/rebuild_cache.dir

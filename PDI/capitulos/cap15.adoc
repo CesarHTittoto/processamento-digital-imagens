@@ -1,0 +1,234 @@
+[[cap15]]
+== Capítulo 15: Filtragem no Domínio do Espaço II (Efeito Tilt-Shift)
+
+.Clique para expandir os exercícios do Capítulo 15
+[%collapsible]
+====
+=== Exercício 1: Tilt-Shift em Imagem Estática (`tiltshift.cpp`)
+
+.Descrição do Problema
+Implementar o programa `tiltshift.cpp` para simular o efeito de miniaturização (*tilt-shift*) em uma imagem estática. A interface deve fornecer três barras de ajuste (*trackbars*) para regulagem interativa dos seguintes parâmetros:
+* Altura da região central em foco (h);
+* Força de decaimento da transição borrada (delta);
+* Posição vertical do centro da região em foco (y_0).
+
+Ao finalizar os ajustes, a imagem gerada com o efeito aplicado deve ser salva em disco.
+
+.Solução Proposta
+. Gerar uma versão borrada da imagem de entrada utilizando um filtro Gaussiano (`cv::GaussianBlur()`).
+. Criar uma máscara de ponderação $a(x)$ baseada na diferença entre duas funções de tangente hiperbólica (sigmóide):
++
+[stem]
+++++
+a(x) = \frac{1}{2} \left[ \tanh\left(\frac{x - y_0 + h/2}{\delta}\right) - \tanh\left(\frac{x - y_0 - h/2}{\delta}\right) \right]
+++++
+. Realizar a mistura ponderada (*blending*) pixel a pixel entre a imagem original stem:[I_{orig}] e a imagem borrada stem:[I_{blur}] conforme a equação:
++
+[stem]
+++++
+I_{res} = a \cdot I_{orig} + (1 - a) \cdot I_{blur}
+++++
+. Atualizar a imagem exibida dinamicamente a cada alteração nas *trackbars* e salvar o resultado final em arquivo (`tiltshift_resultado.png`).
+
+.Código Fonte (`tiltshift.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <cmath>
+#include <opencv2/opencv.hpp>
+
+int height_slider = 20;
+int height_slider_max = 100;
+int decay_slider = 10;
+int decay_slider_max = 100;
+int pos_slider = 50;
+int pos_slider_max = 100;
+
+cv::Mat imageOriginal, imageBlurred, imageResult;
+
+void processTiltShift() {
+  int rows = imageOriginal.rows;
+  int cols = imageOriginal.cols;
+
+  double h = (height_slider / (double)height_slider_max) * rows;
+  double y0 = (pos_slider / (double)pos_slider_max) * rows;
+  double delta = decay_slider + 1.0;
+
+  cv::Mat alpha = cv::Mat::zeros(rows, cols, CV_32FC3);
+
+  for (int r = 0; r < rows; r++) {
+    double val = 0.5 * (std::tanh((r - y0 + h / 2.0) / delta) - std::tanh((r - y0 - h / 2.0) / delta));
+    for (int c = 0; c < cols; c++) {
+      alpha.at<cv::Vec3f>(r, c) = cv::Vec3f(val, val, val);
+    }
+  }
+
+  cv::Mat imgOrigFloat, imgBlurFloat, resultFloat;
+  imageOriginal.convertTo(imgOrigFloat, CV_32FC3);
+  imageBlurred.convertTo(imgBlurFloat, CV_32FC3);
+
+  cv::Mat alphaInverse = cv::Scalar(1.0, 1.0, 1.0) - alpha;
+  resultFloat = imgOrigFloat.mul(alpha) + imgBlurFloat.mul(alphaInverse);
+
+  resultFloat.convertTo(imageResult, CV_8UC3);
+  cv::imshow("Efeito Tilt-Shift", imageResult);
+}
+
+void on_trackbar(int, void*) {
+  processTiltShift();
+}
+
+int main(int argc, char** argv) {
+  std::string filename = (argc > 1) ? argv[1] : "por-do-sol-ponta-negra.png";
+  imageOriginal = cv::imread(filename);
+
+  if (imageOriginal.empty()) {
+    std::cerr << "Erro ao abrir a imagem: " << filename << std::endl;
+    return -1;
+  }
+
+  cv::GaussianBlur(imageOriginal, imageBlurred, cv::Size(21, 21), 0);
+
+  cv::namedWindow("Efeito Tilt-Shift", cv::WINDOW_NORMAL);
+  cv::resizeWindow("Efeito Tilt-Shift", 800, 600);
+
+  cv::createTrackbar("Altura Foco (h)", "Efeito Tilt-Shift", &height_slider, height_slider_max, on_trackbar);
+  cv::createTrackbar("Decaimento (delta)", "Efeito Tilt-Shift", &decay_slider, decay_slider_max, on_trackbar);
+  cv::createTrackbar("Posicao Vert (y0)", "Efeito Tilt-Shift", &pos_slider, pos_slider_max, on_trackbar);
+
+  processTiltShift();
+
+  while (true) {
+    char k = (char)cv::waitKey(30);
+    if (k == 27) break;
+    if (k == 's' || k == 'S') {
+      cv::imwrite("tiltshift_resultado.png", imageResult);
+      std::cout << "Imagem salva como 'tiltshift_resultado.png'!" << std::endl;
+    }
+  }
+
+  cv::imwrite("tiltshift_resultado.png", imageResult);
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+
+A aplicação da máscara sigmóide permite uma transição suave entre a região nitidamente focada na faixa central e o desfoque progressivo nas extremidades superior e inferior. Esse efeito simula a ilusão de uma profundidade de campo extremamente reduzida, típica de fotografias *macro* de maquetes e miniaturas.
+
+.Comparação entre a imagem original e o processamento Tilt-Shift
+[cols="a,a", frame=none, grid=none]
+|===
+^| .Imagem Original (`por-do-sol-ponta-negra.png`)
+image::tiltshift/por-do-sol-ponta-negra.png[Imagem Original, width=320]
+^| .Resultado Com Efeito Tilt-Shift (`tiltshift_resultado.png`)
+image::tiltshift/tiltshift_resultado.png[Tilt-Shift Aplicado, width=320]
+|===
+
+---
+
+=== Exercício 2: Tilt-Shift em Vídeo com Efeito Stop Motion (`tiltshiftvideo.cpp`)
+
+.Descrição do Problema
+Implementar o programa `tiltshiftvideo.cpp` capaz de processar um arquivo de vídeo (e.g., `Natal.mp4`), aplicar o efeito de *tilt-shift* em cada um dos quadros e gravar o resultado final em um arquivo de vídeo de saída. Para simular a estética de maquetes em movimento, deve-se aplicar o descarte controlado de quadros, gerando o efeito de *stop motion*.
+
+.Solução Proposta
+. Carregar o vídeo de entrada utilizando a classe `cv::VideoCapture` e configurar o renderizador `cv::VideoWriter` com o codec de compressão adequado.
+. Criar uma rotina otimizada de cálculo de máscara de peso $a(x)$, pré-calculando o vetor unidimensional das linhas para acelerar o processamento em tempo real do fluxo de vídeo.
+. Estabelecer um fator de amostragem temporal (descarte de quadros $N$), processando apenas 1 a cada $N$ quadros capturados e duplicando-os na gravação para preservar a taxa de atualização (FPS) mantendo o aspecto travado característico de animações em *stop motion*.
+. Gravar o vídeo processado no arquivo de saída (`tiltshift_stopmotion.mp4`).
+
+.Código Fonte (`tiltshiftvideo.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <cmath>
+#include <string>
+#include <opencv2/opencv.hpp>
+
+cv::Mat applyTiltShift(const cv::Mat &frameOrig, double h_ratio, double delta_val, double y0_ratio) {
+  int rows = frameOrig.rows;
+  int cols = frameOrig.cols;
+
+  double h = h_ratio * rows;
+  double y0 = y0_ratio * rows;
+  double delta = delta_val;
+
+  cv::Mat frameBlurred;
+  cv::GaussianBlur(frameOrig, frameBlurred, cv::Size(21, 21), 0);
+
+  cv::Mat alpha1D(rows, 1, CV_32F);
+  for (int r = 0; r < rows; r++) {
+    alpha1D.at<float>(r, 0) = 0.5f * (std::tanh((r - y0 + h / 2.0) / delta) - std::tanh((r - y0 - h / 2.0) / delta));
+  }
+
+  cv::Mat alpha2D;
+  cv::repeat(alpha1D, 1, cols, alpha2D);
+
+  cv::Mat alpha;
+  cv::Mat channels[] = {alpha2D, alpha2D, alpha2D};
+  cv::merge(channels, 3, alpha);
+
+  cv::Mat origFloat, blurFloat, resultFloat, resultByte;
+  frameOrig.convertTo(origFloat, CV_32FC3);
+  frameBlurred.convertTo(blurFloat, CV_32FC3);
+
+  cv::Mat alphaInverse = cv::Scalar(1.0, 1.0, 1.0) - alpha;
+  resultFloat = origFloat.mul(alpha) + blurFloat.mul(alphaInverse);
+
+  resultFloat.convertTo(resultByte, CV_8UC3);
+  return resultByte;
+}
+
+int main(int argc, char** argv) {
+  std::string inputVideo = (argc > 1) ? argv[1] : "Natal.mp4";
+  std::string outputVideo = "tiltshift_stopmotion.mp4";
+
+  double h_ratio = 0.30;
+  double delta_val = 12.0;
+  double y0_ratio = 0.50;
+  int frameSkip = 3;
+
+  cv::VideoCapture cap(inputVideo);
+  if (!cap.isOpened()) {
+    std::cerr << "Erro ao abrir o video: " << inputVideo << std::endl;
+    return -1;
+  }
+
+  int width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+  int height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+  double origFps = cap.get(cv::CAP_PROP_FPS);
+
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+  cv::VideoWriter writer(outputVideo, fourcc, origFps, cv::Size(width, height));
+
+  cv::Mat frame, processedFrame;
+  int frameCount = 0;
+
+  while (true) {
+    cap >> frame;
+    if (frame.empty()) break;
+
+    if (frameCount % frameSkip == 0) {
+      processedFrame = applyTiltShift(frame, h_ratio, delta_val, y0_ratio);
+
+      for (int i = 0; i < frameSkip; i++) {
+        writer.write(processedFrame);
+      }
+    }
+    frameCount++;
+  }
+
+  cap.release();
+  writer.release();
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+
+O descarte periódico de quadros (`frameSkip = 3`) associado à preservação da velocidade de reprodução altera a percepção do movimento contínuo da cena real, aproximando-se da fluidez de modelos reduzidos e maquetes animadas manualmente. A aplicação sequencial do filtro de *tilt-shift* em cada frame reforça o isolamento óptico do elemento de interesse no plano focal central durante a execução do vídeo.
+
+.Resultado do Vídeo com Efeito Tilt-Shift e Stop Motion (`tiltshift_stopmotion.mp4`)
+video::tiltshift/tiltshift_stopmotion_browser.mp4[width=640, opts="autoplay,loop"]
+====

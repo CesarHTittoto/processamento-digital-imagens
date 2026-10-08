@@ -1,0 +1,3 @@
+C:/PDI/filestorage/build/CMakeFiles/senoide.dir
+C:/PDI/filestorage/build/CMakeFiles/edit_cache.dir
+C:/PDI/filestorage/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,127 @@
+[[cap7]]
+== Capítulo 7: Espaços de cor e mapas de cores
+
+.Clique para expandir os exercícios do Capítulo 7
+[%collapsible]
+====
+=== Exercício 1: Decomposição de Espaços de Cor, Colormaps do OpenCV e Colormap Personalizado
+
+.Descrição do Problema
+Este exercício toma como referência o programa da Listagem 22 (`colorspace.cpp`) para explorar a representação de imagens nos espaços de cor **BGR** e **HSV** utilizando a imagem colorida de frutas (`frutas.png`).
+
+Além da decomposição em canais individuais, o programa realiza a conversão da imagem para escala de cinza e aplica 5 mapas de cores (colormaps) pré-definidos do OpenCV (`COLORMAP_AUTUMN`, `COLORMAP_BONE`, `COLORMAP_COOL`, `COLORMAP_SPRING` e `COLORMAP_PLASMA`). Por fim, é desenvolvida uma Look-Up Table (LUT) de dimensão 256 X 1 de 3 canais (`CV_8UC3`) para implementar um **colormap personalizado** com gradiente térmico adaptado.
+
+.Código Fonte (`colorspace.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <vector>
+
+int main(int argc, char** argv) {
+  std::string filename = (argc > 1) ? argv[1] : "../frutas.png";
+
+  cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR);
+
+  if (image.empty()) {
+    std::cerr << "Erro ao abrir a imagem: " << filename << std::endl;
+    return -1;
+  }
+
+  // 1. Decomposição nos canais BGR e HSV
+  std::vector<cv::Mat> planes;
+  cv::Mat rgb_planes, hsv_planes, hsv_image;
+
+  cv::split(image, planes);
+  cv::hconcat(planes[0], planes[1], rgb_planes);
+  cv::hconcat(rgb_planes, planes[2], rgb_planes);
+  cv::imwrite("frutas_bgr_planes.png", rgb_planes);
+
+  cv::cvtColor(image, hsv_image, cv::COLOR_BGR2HSV_FULL);
+  cv::split(hsv_image, planes);
+  cv::hconcat(planes[0], planes[1], hsv_planes);
+  cv::hconcat(hsv_planes, planes[2], hsv_planes);
+  cv::imwrite("frutas_hsv_planes.png", hsv_planes);
+
+  // 2. Conversão para escala de cinza para aplicação dos colormaps
+  cv::Mat gray;
+  cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+  // 3. Aplicação de 5 Colormaps Pré-definidos
+  cv::Mat cm_autumn, cm_bone, cm_cool, cm_spring, cm_plasma;
+
+  cv::applyColorMap(gray, cm_autumn, cv::COLORMAP_AUTUMN);
+  cv::applyColorMap(gray, cm_bone, cv::COLORMAP_BONE);
+  cv::applyColorMap(gray, cm_cool, cv::COLORMAP_COOL);
+  cv::applyColorMap(gray, cm_spring, cv::COLORMAP_SPRING);
+  cv::applyColorMap(gray, cm_plasma, cv::COLORMAP_PLASMA);
+
+  cv::imwrite("frutas_autumn.png", cm_autumn);
+  cv::imwrite("frutas_bone.png", cm_bone);
+  cv::imwrite("frutas_cool.png", cm_cool);
+  cv::imwrite("frutas_spring.png", cm_spring);
+  cv::imwrite("frutas_plasma.png", cm_plasma);
+
+  // 4. Criação de Colormap Personalizado via Look-Up Table (LUT)
+  cv::Mat custom_lut(256, 1, CV_8UC3);
+
+  for (int i = 0; i < 256; i++) {
+    uchar b = cv::saturate_cast<uchar>(255 - i);
+    uchar g = cv::saturate_cast<uchar>(i < 128 ? i * 2 : 255 - (i - 128) * 2);
+    uchar r = cv::saturate_cast<uchar>(i);
+
+    custom_lut.at<cv::Vec3b>(i, 0) = cv::Vec3b(b, g, r);
+  }
+
+  cv::Mat cm_custom;
+  cv::applyColorMap(gray, cm_custom, custom_lut);
+  cv::imwrite("frutas_custom.png", cm_custom);
+
+  std::cout << "Sucesso! Imagens geradas." << std::endl;
+
+  return 0;
+}
+----
+
+.Resultados Obtidos
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:colorspace/frutas_bgr_planes.png[Canais BGR, 384]
+| image:colorspace/frutas_hsv_planes.png[Canais HSV, 384]
+
+^| (a) Canais BGR (Azul \| Verde \| Vermelho)
+^| (b) Canais HSV (Matiz \| Saturação \| Valor)
+|===
+
+[cols="1,1,1", frame=none, grid=none]
+|===
+| image:colorspace/frutas_autumn.png[Autumn, 256, 256]
+| image:colorspace/frutas_bone.png[Bone, 256, 256]
+| image:colorspace/frutas_cool.png[Cool, 256, 256]
+
+^| (c) `COLORMAP_AUTUMN`
+^| (d) `COLORMAP_BONE`
+^| (e) `COLORMAP_COOL`
+
+| image:colorspace/frutas_spring.png[Spring, 256, 256]
+| image:colorspace/frutas_plasma.png[Plasma, 256, 256]
+| image:colorspace/frutas_custom.png[Custom LUT, 256, 256]
+
+^| (f) `COLORMAP_SPRING`
+^| (g) `COLORMAP_PLASMA`
+^| (h) Colormap Personalizado (LUT BGR)
+|===
+
+.Discussão e Análise
+1. **Decomposição BGR vs. HSV:**
+   * A separação dos canais BGR mostra a contribuição luminosa direta de cada cor primária. No espaço HSV, o canal H (*Hue*) codifica o tom puro da cor das frutas (como o vermelho dos morangos e o amarelo/verde das uvas e bananas), independente da iluminação, enquanto S (*Saturation*) e V (*Value*) isolam a vivacidade e o brilho.
+
+2. **Funcionamento dos Colormaps e da LUT Customizada:**
+   * A função `cv::applyColorMap()` mapeia valores de intensidade de 0 a 255 para uma paleta tricolor BGR.
+   * A LUT customizada de dimensão 256 X 1 do tipo `CV_8UC3` constrói um gradiente contínuo:
+     ** **Azul (B = 255 - i):** Predomina nas regiões de sombra e tons baixos.
+     ** **Verde (G):** Possui curva triangular com pico central em i = 128, destacando tons médios.
+     ** **Vermelho (R = i):** Cresce linearmente até atingir o máximo nos pontos de alta luminância.
+   * Essa distribuição transiciona suavemente do azul frio (sombras) ao vermelho/amarelo quente (brilhos), aumentando o contraste percebido na cena das frutas.
+====

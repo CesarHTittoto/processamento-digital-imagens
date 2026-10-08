@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="author" content="César Henrique Tittoto Melo &lt;cesar.tittoto.058@ufrn.edu.br&gt;">
+<title>Processamento Digital de Imagens (PDI)</title>
+<style>
+/* Fundo da página e texto principal */
+body {
+    background-color: #2b2b2b !important;
+    color: #e0e0e0 !important;
+}
+
+/* Painel principal de conteúdo */
+#header, #content, #footnotes, #footer {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Sidebar lateral (Sumário/TOC2) */
+#toc.toc2 {
+    background-color: #1a1a1a !important;
+    border-right-color: #2e2e2e !important;
+}
+
+#toc.toc2 #toctitle {
+    color: #62a1f8 !important; /* Cor terracota original do título do Sumário */
+}
+
+/* Mantém os links do sumário visíveis */
+#toc.toc2 a {
+    color: #4183c4 !important;
+}
+
+#toc.toc2 a:hover {
+    color: #63a0e3 !important;
+}
+
+/* Títulos principais mantendo a cor e fonte original */
+h1, h2, h3, h4, h5, h6, .subheader, .sidebarblock>.content>.title {
+    color: #62a1f8 !important; /* Terracota padrão do Asciidoctor */
+}
+
+#toctitle, .title, h1.title {
+    color: #62a1f8 !important;
+}
+
+/* Cor do texto do autor/e-mail */
+.details, #author, #email, #revdate {
+    color: #a0a0a0 !important;
+}
+
+/* Caixas retráteis (Collapsible / details) e blocos de código */
+details, summary {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+}
+
+pre, code {
+    background-color: #646363 !important;
+    color: #f8f8f2 !important;
+    border-color: #646363 !important;
+}
+
+/* Linhas divisórias */
+hr {
+    border-color: #2e2e2e !important;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<style>
+  /* Layout do Sumário Lateral (TOC2) */
+  /* 1. Definição da largura da barra lateral (TOC) */
+    #toc.toc2 {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 20em !important; /* Ajusta a largura do menu lateral */
+    height: 100% !important;
+    overflow-y: auto !important;
+    background-color: #1a1a1a !important;
+    border-right: 1px solid #2e2e2e !important;
+    padding: 1.5em 1em !important;
+    box-sizing: border-box !important;
+    z-index: 1000 !important;
+    }
+
+    /* 2. Recuo do conteúdo para dar o espaço necessário à direita do TOC */
+    #header, #content, #footnotes, #footer {
+    max-width: 65em !important;
+    margin-left: 24em !important; /* Cria o espaço em branco/vazio entre o TOC e o texto */
+    padding-left: 2em !important;   /* Espaçamento interno adicional */
+    padding-right: 2em !important;
+    }
+
+    /* 3. Ajuste para telas menores (Responsividade) */
+    @media screen and (max-width: 1280px) {
+    #header, #content, #footnotes, #footer {
+        margin-left: 22em !important;
+    }
+    }
+
+  /* Fundo da Página e Cores de Texto */
+  body {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+  }
+
+  #header, #content, #footnotes, #footer {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+  }
+
+  /* Cores de Títulos */
+  h1, h2, h3, h4, h5, h6, .subheader, #toctitle, .title, h1.title {
+    color: #62a1f8 !important;
+  }
+
+  /* Links do Sumário */
+  #toc.toc2 a {
+    color: #4183c4 !important;
+  }
+
+  #toc.toc2 a:hover {
+    color: #63a0e3 !important;
+  }
+
+  /* Blocos de Código e Caixas Expansíveis */
+  details, summary, pre, code {
+    background-color: #1e1e1e !important;
+    color: #f8f8f2 !important;
+    border-color: #333333 !important;
+  }
+
+  hr {
+    border-color: #2e2e2e !important;
+  }
+</style>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Processamento Digital de Imagens (PDI)</h1>
+<div class="details">
+<span id="author" class="author">César Henrique Tittoto Melo &lt;cesar.tittoto.058@ufrn.edu.br&gt;</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Sumário</div>
+<ul class="sectlevel0">
+<li><a href="#_primeira_unidade">Primeira Unidade</a>
+<ul class="sectlevel1">
+<li><a href="#cap2">1. Capítulo 2: Manipulando pixels em uma imagem</a></li>
+<li><a href="#cap3">2. Capítulo 3: Tratando arquivos de vídeo</a></li>
+<li><a href="#cap4">3. Capítulo 4: Visualização de imagens</a></li>
+<li><a href="#cap5">4. Capítulo 5: Serialização de dados em ponto flutuante via FileStorage</a></li>
+<li><a href="#cap6">5. Capítulo 6: Colorizando imagens cinzentas com mapas de cores</a></li>
+<li><a href="#cap7">6. Capítulo 7: Espaços de cor e mapas de cores</a></li>
+<li><a href="#cap8">7. Capítulo 8: Seleção de cores e segmentação interativa</a></li>
+<li><a href="#cap9">8. Capítulo 9: Combinação de imagens</a></li>
+<li><a href="#cap10">9. Capítulo 10: Decomposição em planos de bits e esteganografia</a></li>
+<li><a href="#cap11">10. Capítulo 11: Preenchimento de regiões</a></li>
+<li><a href="#cap12">11. Capítulo 11: Histogramas e Aplicações</a></li>
+<li><a href="#cap13">12. Capítulo 13: Transformações Geométricas e Correção de Perspectiva</a></li>
+<li><a href="#cap14">13. Capítulo 14: Filtragem no Domínio do Espaço I</a></li>
+<li><a href="#cap15">14. Capítulo 15: Filtragem no Domínio do Espaço II (Efeito Tilt-Shift)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<h1 id="_primeira_unidade" class="sect0">Primeira Unidade</h1>
+<div class="sect1">
+<h2 id="cap2">1. Capítulo 2: Manipulando pixels em uma imagem</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 2</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Efeito Negativo em Região Retangular</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo é inverter os valores de intensidade dos pixels (gerar o efeito negativo) apenas em uma região retangular definida por dois pontos: \(P_1 = (x_1, y_1)\) e \(P_2 = (x_2, y_2)\).</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: ./pixels &lt;caminho_da_imagem&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat image = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cout &lt;&lt; "Erro ao abrir a imagem!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  int x1, y1, x2, y2;
+  std::cout &lt;&lt; "Dimensões da imagem: " &lt;&lt; image.cols &lt;&lt; "x" &lt;&lt; image.rows &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Digite P1 (x y): ";
+  std::cin &gt;&gt; x1 &gt;&gt; y1;
+  std::cout &lt;&lt; "Digite P2 (x y): ";
+  std::cin &gt;&gt; x2 &gt;&gt; y2;
+
+  int x_min = std::max(0, std::min(x1, x2));
+  int x_max = std::min(image.cols - 1, std::max(x1, x2));
+  int y_min = std::max(0, std::min(y1, y2));
+  int y_max = std::min(image.rows - 1, std::max(y1, y2));
+
+  for (int i = y_min; i &lt;= y_max; i++) {
+    for (int j = x_min; j &lt;= x_max; j++) {
+      image.at&lt;uchar&gt;(i, j) = 255 - image.at&lt;uchar&gt;(i, j);
+    }
+  }
+
+  cv::imwrite("resultado_negativo.png", image);
+  cv::imshow("Pixels - Região Negativa", image);
+  cv::waitKey(0);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 1. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="pixels/bolhas.png" alt="Imagem Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="pixels/resultado_negativo.png" alt="Região Negativa" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem original (<code>bolhas.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Negativo aplicado na região selecionada (<code>resultado_negativo.png</code>)</p></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<div class="paragraph">
+<p>=== Exercício 2: Troca de Quadrantes em Diagonal</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo consiste em recortar uma imagem de entrada em quatro quadrantes de tamanhos iguais e trocá-los em diagonal através do uso de retângulos de interesse (<code>cv::Rect</code>) e cópia de matrizes (<code>copyTo</code>).</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: ./trocaregioes &lt;caminho_da_imagem&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat image = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cout &lt;&lt; "Erro ao carregar a imagem." &lt;&lt; std::endl;
+    return -1;
+  }
+
+  int half_width = image.cols / 2;
+  int half_height = image.rows / 2;
+
+  cv::Mat result = cv::Mat::zeros(image.size(), image.type());
+
+  // Submatrizes (ROIs)
+  cv::Mat qA(image, cv::Rect(0, 0, half_width, half_height));
+  cv::Mat qB(image, cv::Rect(half_width, 0, half_width, half_height));
+  cv::Mat qC(image, cv::Rect(0, half_height, half_width, half_height));
+  cv::Mat qD(image, cv::Rect(half_width, half_height, half_width, half_height));
+
+  // Troca diagonal
+  qA.copyTo(result(cv::Rect(half_width, half_height, half_width, half_height)));
+  qD.copyTo(result(cv::Rect(0, 0, half_width, half_height)));
+  qB.copyTo(result(cv::Rect(0, half_height, half_width, half_height)));
+  qC.copyTo(result(cv::Rect(half_width, 0, half_width, half_height)));
+
+  cv::imwrite("resultado_trocaregioes.png", result);
+  cv::imshow("Troca de Quadrantes", result);
+  cv::waitKey(0);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 2. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="pixels/bolhas.png" alt="Imagem Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="pixels/resultado_trocaregioes.png" alt="Quadrantes Trocados" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem original (<code>bolhas.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Imagem com os quadrantes permutados</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap3">2. Capítulo 3: Tratando arquivos de vídeo</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 3</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Conversão e Gravação de Vídeo em Tons de Cinza</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é capturar um fluxo de vídeo a partir de um arquivo de entrada, converter cada quadro para a escala de cinza com <code>cv::cvtColor</code> e salvá-lo em um novo arquivo no formato <code>.mp4</code>. O parâmetro <code>isColor</code> do construtor <code>cv::VideoWriter</code> é configurado como <code>false</code> para indicar a gravação de imagens monocromáticas de apenas 1 canal.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#ifndef _REENTRANT
+#define _REENTRANT
+#endif
+
+#include &lt;mutex&gt;
+#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: ./videocinza &lt;caminho_do_video&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::VideoCapture cap(argv[1]);
+  if (!cap.isOpened()) {
+    std::cout &lt;&lt; "Erro ao abrir o vídeo!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  double fps = cap.get(cv::CAP_PROP_FPS);
+
+  if (fps &lt;= 0) fps = 30.0;
+
+  cv::Size frameSize(static_cast&lt;int&gt;(width), static_cast&lt;int&gt;(height));
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+
+  cv::VideoWriter out("output_cinza.mp4", fourcc, fps, frameSize, false);
+
+  if (!out.isOpened()) {
+    std::cout &lt;&lt; "Erro ao criar o arquivo de saída de vídeo!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::namedWindow("Vídeo em Tons de Cinza", cv::WINDOW_AUTOSIZE);
+
+  cv::Mat frame, frame_gray;
+  int counter = 0;
+
+  while (cap.read(frame)) {
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+    out &lt;&lt; frame_gray;
+
+    cv::imshow("Vídeo em Tons de Cinza", frame_gray);
+
+    counter++;
+
+    char key = static_cast&lt;char&gt;(cv::waitKey(30));
+    if (key == 27) break;
+  }
+
+  cap.release();
+  out.release();
+  cv::destroyAllWindows();
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="videoblock">
+<div class="title">Resultados Obtidos</div>
+<div class="content">
+<video src="video/output_cinza_h264.mp4" width="640" height="360" controls>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+<hr>
+<div class="paragraph">
+<p>=== Exercício 2: Gravação de Vídeo com Efeito Negativo</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Modificar o processamento para aplicar a inversão de intensidade (<code>bitwise_not</code>) em cada canal do quadro antes de gravá-lo no arquivo de saída <code>.mp4</code>. Como a imagem mantém os 3 canais de cor (BGR), o parâmetro <code>isColor</code> do <code>cv::VideoWriter</code> é mantido como <code>true</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#ifndef _REENTRANT
+#define _REENTRANT
+#endif
+
+#include &lt;mutex&gt;
+#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: ./videonegativo &lt;caminho_do_video&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::VideoCapture cap(argv[1]);
+  if (!cap.isOpened()) {
+    std::cout &lt;&lt; "Erro ao abrir o vídeo!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  double width = cap.get(cv::CAP_PROP_FRAME_WIDTH);
+  double height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
+  double fps = cap.get(cv::CAP_PROP_FPS);
+
+  if (fps &lt;= 0) fps = 30.0;
+
+  cv::Size frameSize(static_cast&lt;int&gt;(width), static_cast&lt;int&gt;(height));
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+
+  cv::VideoWriter out("output_negativo.mp4", fourcc, fps, frameSize, true);
+
+  if (!out.isOpened()) {
+    std::cout &lt;&lt; "Erro ao criar o arquivo de saída de vídeo!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::namedWindow("Vídeo Negativo", cv::WINDOW_AUTOSIZE);
+
+  cv::Mat frame, frame_neg;
+  int counter = 0;
+
+  while (cap.read(frame)) {
+    if (frame.empty()) break;
+
+    cv::bitwise_not(frame, frame_neg);
+    out &lt;&lt; frame_neg;
+
+    cv::imshow("Vídeo Negativo", frame_neg);
+
+    counter++;
+
+    char key = static_cast&lt;char&gt;(cv::waitKey(30));
+    if (key == 27) break;
+  }
+
+  cap.release();
+  out.release();
+  cv::destroyAllWindows();
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="videoblock">
+<div class="title">Resultados Obtidos</div>
+<div class="content">
+<video src="video/output_negativo_h264.mp4" width="640" height="360" controls>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap4">3. Capítulo 4: Visualização de imagens</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 4</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Geração de Dados para Perfil de Iluminação em 3D</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é extrair a matriz de intensidades de luminância e um perfil de linha horizontal de imagens de entrada (<code>sementes1.png</code> e <code>sementes2.png</code>) utilizando o programa <code>visualizacao.cpp</code>.</p>
+</div>
+<div class="paragraph">
+<p>Os arquivos de saída gerados (<code>matriz.txt</code> e <code>line.txt</code>) são posteriormente processados pelo programa <strong>Gnuplot</strong> para gerar renderizações tridimensionais (mapas de superfície/iluminação) e gráficos de perfil de linha em 2D.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>visualizacao.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: ./visualizacao &lt;caminho_da_imagem&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat image = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cout &lt;&lt; "Erro ao carregar a imagem!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  std::ofstream fmatriz("matriz.txt");
+  std::ofstream fline("line.txt");
+
+  if (!fmatriz.is_open() || !fline.is_open()) {
+    std::cout &lt;&lt; "Erro ao criar os arquivos de saída!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  int mid_row = image.rows / 2;
+
+  for (int i = 0; i &lt; image.rows; i++) {
+    for (int j = 0; j &lt; image.cols; j++) {
+      int val = static_cast&lt;int&gt;(image.at&lt;uchar&gt;(i, j));
+
+      fmatriz &lt;&lt; val &lt;&lt; (j == image.cols - 1 ? "" : " ");
+
+      if (i == mid_row) {
+        fline &lt;&lt; j &lt;&lt; " " &lt;&lt; val &lt;&lt; "\n";
+      }
+    }
+    fmatriz &lt;&lt; "\n";
+  }
+
+  fmatriz.close();
+  fline.close();
+
+  std::cout &lt;&lt; "Arquivos matriz.txt e line.txt gerados com sucesso para " &lt;&lt; argv[1] &lt;&lt; std::endl;
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Scripts do Gnuplot</div>
+<p>Para a renderização dos gráficos, utilize os seguintes scripts no terminal do Gnuplot:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Gerar Superfície 3D (<code>plot3d.gp</code>):</strong></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>set title "Perfil 3D de Intensidades Luminosas"
+set xlabel "Colunas (X)"
+set ylabel "Linhas (Y)"
+set zlabel "Intensidade"
+set hidden3d
+set dgrid3d 100,100
+splot 'matriz.txt' matrix with lines</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Gerar Perfil 2D da Linha Central (<code>plot2d.gp</code>):</strong></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>set title "Perfil de Linha Central"
+set xlabel "Coluna (X)"
+set ylabel "Intensidade"
+plot 'line.txt' with lines title "Linha Central"</pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 3. Resultados Obtidos e Comparação</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/sementes1.png" alt="Sementes 1" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/sementes2.png" alt="Sementes 2" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem <code>sementes1.png</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Imagem <code>sementes2.png</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/plot3d_sementes1.png" alt="Perfil 3D Sementes 1" width="300" height="250"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/plot3d_sementes2.png" alt="Perfil 3D Sementes 2" width="300" height="250"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(c) Superfície 3D de <code>sementes1.png</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(d) Superfície 3D de <code>sementes2.png</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/plot2d_sementes1.png" alt="Perfil 2D Sementes 1" width="300" height="250"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="visualizacao/plot2d_sementes2.png" alt="Perfil 2D Sementes 2" width="300" height="250"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(e) Perfil de linha central de <code>sementes1.png</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(f) Perfil de linha central de <code>sementes2.png</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<div class="title">Discussão e Análise da Iluminação das Cenas</div>
+<p>A comparação entre as superfícies 3D e os perfis de linha em 2D revela detalhes fundamentais sobre a distribuição de intensidade e os artefatos de iluminação em cada cena:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Análise de <code>sementes1.png</code>:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Comportamento do Fundo:</strong> O plano de fundo é predominantemente claro e uniforme, mantendo um nível de luminância elevado em torno de 190 a 200 ao longo de toda a extensão da imagem.</p>
+</li>
+<li>
+<p><strong>Perfil das Sementes:</strong> Como as sementes são objetos escuros sobre fundo claro, elas são representadas nos gráficos por <strong>vales/poços de intensidade</strong> bem definidos, onde a luminância cai abruptamente para valores próximos de 40 a 50.</p>
+</li>
+<li>
+<p><strong>Perfil 2D (<code>plot2d_sementes1.png</code>):</strong> A linha de base do fundo permanece praticamente horizontal e plana (alta frequência nos vales das sementes sobre uma componente contínua de fundo estável), o que demonstra que a cena possui iluminação frontal homogênea.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Análise de <code>sementes2.png</code>:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Efeito de Vinheta (Vignetting) e Iluminação Não Uniforme:</strong> A superfície 3D e o perfil de linha 2D revelam uma acentuada curvatura parabólica no nível de fundo. A intensidade do background atinge seu ponto máximo no centro da imagem (~150) e cai progressivamente em direção às bordas (~100), caracterizando uma iluminação centralizada ou atenuação periférica de lente (vinhetagem).</p>
+</li>
+<li>
+<p><strong>Perfil das Sementes:</strong> As sementes continuam aparecendo como vales de menor intensidade (descendo até ~20–30), porém o nível absoluto de seus mínimos varia conforme a posição horizontal na cena devido ao gradiente do fundo.</p>
+</li>
+<li>
+<p><strong>Impacto no Processamento:</strong> No perfil 2D (<code>plot2d_sementes2.png</code>), fica claro que a escolha de um único limiar global (por exemplo, limiar fixo em 120) falharia na binarização: ele cortaria o fundo nas extremidades da imagem e confundiria o background escuro com as sementes. Essa cena exige técnicas de correção de iluminação (subtração de fundo/estimador de iluminação) ou limiarização adaptativa local.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap5">4. Capítulo 5: Serialização de dados em ponto flutuante via FileStorage</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 5</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Geração, Serialização e Comparação de Senóide 2D (YML vs PNG)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é gerar uma imagem sintética de dimensões 256x256 pixels contendo uma senoide horizontal de 4 períodos e amplitude 127 (deslocada por um offset de 127 para que a faixa teórica ocupe de 0 a 254).</p>
+</div>
+<div class="paragraph">
+<p>A matriz com valores em ponto flutuante (<code>CV_32F</code>) é gravada em disco no formato <strong>YML</strong> (utilizando a classe <code>cv::FileStorage</code>) e convertida/salva no formato <strong>PNG</strong> (imagem de 8 bits por canal, <code>CV_8U</code>). Em seguida, ambas as imagens são recarregadas para extrair uma mesma linha horizontal, calculando a diferença absoluta ponto a ponto e gerando um gráfico com o <strong>Gnuplot</strong>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>senoide.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;cmath&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main() {
+  int width = 256;
+  int height = 256;
+  int periodos = 4;
+  float amplitude = 127.0f;
+  float offset = 127.0f;
+
+  cv::Mat image(height, width, CV_32FC1);
+
+  // Geração da senoide horizontal
+  for (int j = 0; j &lt; width; j++) {
+    float val = offset + amplitude * std::sin(2.0f * M_PI * periodos * j / width);
+    for (int i = 0; i &lt; height; i++) {
+      image.at&lt;float&gt;(i, j) = val;
+    }
+  }
+
+  // 1. Gravação em formato YML (Ponto Flutuante)
+  cv::FileStorage fs("senoide.yml", cv::FileStorage::WRITE);
+  fs &lt;&lt; "mat" &lt;&lt; image;
+  fs.release();
+
+  // 2. Normalização e Gravação em formato PNG (8 bits inteiros)
+  cv::Mat image8u;
+  image.convertTo(image8u, CV_8U);
+  cv::imwrite("senoide.png", image8u);
+
+  // --- Leitura e Comparação ---
+  cv::Mat img_yml;
+  cv::FileStorage fs_read("senoide.yml", cv::FileStorage::READ);
+  fs_read["mat"] &gt;&gt; img_yml;
+  fs_read.release();
+
+  cv::Mat img_png = cv::imread("senoide.png", cv::IMREAD_GRAYSCALE);
+
+  int mid_row = height / 2;
+  std::ofstream fdiff("diferenca_linha.txt");
+
+  for (int j = 0; j &lt; width; j++) {
+    float val_yml = img_yml.at&lt;float&gt;(mid_row, j);
+    float val_png = static_cast&lt;float&gt;(img_png.at&lt;uchar&gt;(mid_row, j));
+    float diff = std::abs(val_yml - val_png);
+
+    fdiff &lt;&lt; j &lt;&lt; " " &lt;&lt; val_yml &lt;&lt; " " &lt;&lt; val_png &lt;&lt; " " &lt;&lt; diff &lt;&lt; "\n";
+  }
+
+  fdiff.close();
+  std::cout &lt;&lt; "Processamento concluído. Arquivo diferenca_linha.txt gerado com sucesso!" &lt;&lt; std::endl;
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Script do Gnuplot (<code>plot_diff.gp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-gnuplot hljs" data-lang="gnuplot">set title "Diferença do Perfil de Linha: YML (32F) vs PNG (8U)"
+set xlabel "Coluna (X)"
+set ylabel "Diferença Absoluta |YML - PNG|"
+set grid
+set yrange [0:1]
+plot 'diferenca_linha.txt' using 1:4 with lines title "Erro de Quantização"</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 4. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="filestorage/senoide.png" alt="Senoide Gerada em PNG" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="filestorage/plot_diferenca.png" alt="Gráfico da Diferença" width="320" height="240"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem visual da senoide gerada (<code>senoide.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Erro de quantização ao longo da linha central (<code>plot_diferenca.png</code>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>O que é observado:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>O gráfico da diferença oscila periodicamente entre 0.0 e no máximo 0.5 unidades de intensidade ao longo de cada período da senoide.</p>
+</li>
+<li>
+<p>O arquivo <strong>YML</strong> retém os valores contínuos exatos como números de ponto flutuante (<code>float</code>), enquanto o <strong>PNG</strong> trunca e arredonda esses valores para números inteiros sem sinal de 8 bits (intervalo de 0 a 255).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Por que isso acontece?</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Truncamento de Quantização:</strong> A conversão de <code>CV_32F</code> para <code>CV_8U</code> discretiza a função contínua seno em níveis inteiros discretos. O erro possui um valor máximo teórico de exatamente 0.5.</p>
+</li>
+<li>
+<p><strong>Precisão Numérica vs Formato de Armazenamento:</strong> Imagens em formato PNG convencional não foram projetadas para armazenar matrizes de dados numéricos científicos de ponto flutuante sem perda. Para preservar a precisão completa de processamento (como transformadas de Fourier, mapas de profundidade e derivadas de imagem), utiliza-se a serialização de dados como YML/XML/JSON (<code>cv::FileStorage</code>) ou formatos de imagem HDR/ponto flutuante de alta profundidade.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap6">5. Capítulo 6: Colorizando imagens cinzentas com mapas de cores</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 6</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Aplicação de Colormaps Pré-definidos e Implementação de Colormap Personalizado</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste capítulo é explorar a pseudo-colorização de imagens em escala de cinza utilizando a função <code>cv::applyColorMap()</code> do OpenCV. Inicialmente, a imagem de teste <code>biel.png</code> é processada com 5 mapas de cores pré-definidos do OpenCV (<code>COLORMAP_JET</code>, <code>COLORMAP_HOT</code>, <code>COLORMAP_OCEAN</code>, <code>COLORMAP_SUMMER</code> e <code>COLORMAP_VIRIDIS</code>).</p>
+</div>
+<div class="paragraph">
+<p>Em seguida, demonstra-se a criação de um <strong>colormap personalizado</strong> aplicando uma Look-Up Table (LUT) customizada de 256 elementos (3 canais BGR) que mapeia a escala de cinza $[0, 255]$ para um gradiente de cores exclusivo (do azul escuro passando pelo ciano/amarelo até o vermelho).</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>colormaps_ex.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  cv::Mat gray = cv::imread("biel.png", cv::IMREAD_GRAYSCALE);
+
+  if (gray.empty()) {
+    std::cout &lt;&lt; "Erro ao carregar a imagem biel.png!" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  // 1. Aplicação de 5 Colormaps Pré-definidos
+  cv::Mat cm_jet, cm_hot, cm_ocean, cm_summer, cm_viridis;
+
+  cv::applyColorMap(gray, cm_jet, cv::COLORMAP_JET);
+  cv::applyColorMap(gray, cm_hot, cv::COLORMAP_HOT);
+  cv::applyColorMap(gray, cm_ocean, cv::COLORMAP_OCEAN);
+  cv::applyColorMap(gray, cm_summer, cv::COLORMAP_SUMMER);
+  cv::applyColorMap(gray, cm_viridis, cv::COLORMAP_VIRIDIS);
+
+  cv::imwrite("biel_jet.png", cm_jet);
+  cv::imwrite("biel_hot.png", cm_hot);
+  cv::imwrite("biel_ocean.png", cm_ocean);
+  cv::imwrite("biel_summer.png", cm_summer);
+  cv::imwrite("biel_viridis.png", cm_viridis);
+
+  // 2. Criação de Colormap Personalizado via Look-Up Table (LUT)
+  // Criamos uma matriz 1x256 do tipo CV_8UC3
+  cv::Mat custom_lut(1, 256, CV_8UC3);
+
+  for (int i = 0; i &lt; 256; i++) {
+    // Mapeamento de cor customizado BGR em função da intensidade i (0-255)
+    uchar b = cv::saturate_cast&lt;uchar&gt;(i&lt; 128 ? i * 2 : 255 + (i - 128) * 2);   // Azul
+    uchar g = cv::saturate_cast&lt;uchar&gt;(i&lt; 128 ? i * 2 : 50 + (i - 128) * 2);   // Verde
+    uchar r = cv::saturate_cast&lt;uchar&gt;(i);   // Vermelho
+
+    custom_lut.at&lt;cv::Vec3b&gt;(0, i) = cv::Vec3b(b, g, r);
+  }
+
+  cv::Mat cm_custom;
+  cv::applyColorMap(gray, cm_custom, custom_lut);
+  cv::imwrite("biel_custom.png", cm_custom);
+
+  std::cout &lt;&lt; "Todos os colormaps foram gerados e salvos com sucesso!" &lt;&lt; std::endl;
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 5. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel.png" alt="Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_jet.png" alt="Jet" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_hot.png" alt="Hot" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Original (<code>biel.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) <code>COLORMAP_JET</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(c) <code>COLORMAP_HOT</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_ocean.png" alt="Ocean" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_summer.png" alt="Summer" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_viridis.png" alt="Viridis" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(d) <code>COLORMAP_OCEAN</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(e) <code>COLORMAP_SUMMER</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(f) <code>COLORMAP_VIRIDIS</code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel.png" alt="Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colormap/biel_custom.png" alt="Custom LUT" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(g) Imagem Original em Escala de Cinza</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(h) Colormap Personalizado (LUT BGR)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Importância da Pseudo-colorização:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>O sistema visual humano possui capacidade limitada para discernir tons de cinza (aproximadamente 30 a 50 níveis perceptíveis), mas consegue diferenciar milhares de nuances de cores. A conversão de intensidade de cinza em falsa cor destaca detalhes sutis em exames médicos, mapas térmicos e imagens de sensoriamento remoto.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Funcionamento da LUT Personalizada:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Conforme documentado no OpenCV, a função <code>cv::applyColorMap()</code> pode receber como segundo parâmetro tanto uma flag inteira referente a uma paleta pré-definida quanto uma matriz Look-Up Table de dimensão 256x1 do tipo <code>CV_8UC3</code>.</p>
+</li>
+<li>
+<p>No exemplo desenvolvido, a tabela calcula os canais BGR de forma segmentada para o intervalo de intensidade i de 0 a 255:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Canal Azul (B):</strong> Para tons escuros (i &lt; 128), cresce linearmente de 0 a 254 (2 * i). Para tons claros (i &gt;= 128), sofre um salto somando um offset e continua a crescer saturando em 255 através de <code>cv::saturate_cast</code>.</p>
+</li>
+<li>
+<p><strong>Canal Verde (G):</strong> Nos tons escuros cresce linearmente de 0 a 254 (2 * i), e nos tons claros reinicia a partir de um nível base de 50 somando 2 * (i - 128), mantendo uma contribuição média/alta nas regiões de maior intensidade.</p>
+</li>
+<li>
+<p><strong>Canal Vermelho &#174;:</strong> Acompanha diretamente a intensidade original i de 0 a 255.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Essa combinação resulta num gradiente contínuo onde as regiões de baixa intensidade transitam de tons escuros para nuances de ciano e azul, enquanto as altas luzes ganham componentes mistas saturadas de vermelho, verde e azul, destacando o contraste dos elementos da imagem <code>biel.png</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap7">6. Capítulo 7: Espaços de cor e mapas de cores</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 7</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Decomposição de Espaços de Cor, Colormaps do OpenCV e Colormap Personalizado</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Este exercício toma como referência o programa da Listagem 22 (<code>colorspace.cpp</code>) para explorar a representação de imagens nos espaços de cor <strong>BGR</strong> e <strong>HSV</strong> utilizando a imagem colorida de frutas (<code>frutas.png</code>).</p>
+</div>
+<div class="paragraph">
+<p>Além da decomposição em canais individuais, o programa realiza a conversão da imagem para escala de cinza e aplica 5 mapas de cores (colormaps) pré-definidos do OpenCV (<code>COLORMAP_AUTUMN</code>, <code>COLORMAP_BONE</code>, <code>COLORMAP_COOL</code>, <code>COLORMAP_SPRING</code> e <code>COLORMAP_PLASMA</code>). Por fim, é desenvolvida uma Look-Up Table (LUT) de dimensão 256 X 1 de 3 canais (<code>CV_8UC3</code>) para implementar um <strong>colormap personalizado</strong> com gradiente térmico adaptado.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>colorspace.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;vector&gt;
+
+int main(int argc, char** argv) {
+  std::string filename = (argc &gt; 1) ? argv[1] : "../frutas.png";
+
+  cv::Mat image = cv::imread(filename, cv::IMREAD_COLOR);
+
+  if (image.empty()) {
+    std::cerr &lt;&lt; "Erro ao abrir a imagem: " &lt;&lt; filename &lt;&lt; std::endl;
+    return -1;
+  }
+
+  // 1. Decomposição nos canais BGR e HSV
+  std::vector&lt;cv::Mat&gt; planes;
+  cv::Mat rgb_planes, hsv_planes, hsv_image;
+
+  cv::split(image, planes);
+  cv::hconcat(planes[0], planes[1], rgb_planes);
+  cv::hconcat(rgb_planes, planes[2], rgb_planes);
+  cv::imwrite("frutas_bgr_planes.png", rgb_planes);
+
+  cv::cvtColor(image, hsv_image, cv::COLOR_BGR2HSV_FULL);
+  cv::split(hsv_image, planes);
+  cv::hconcat(planes[0], planes[1], hsv_planes);
+  cv::hconcat(hsv_planes, planes[2], hsv_planes);
+  cv::imwrite("frutas_hsv_planes.png", hsv_planes);
+
+  // 2. Conversão para escala de cinza para aplicação dos colormaps
+  cv::Mat gray;
+  cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
+
+  // 3. Aplicação de 5 Colormaps Pré-definidos
+  cv::Mat cm_autumn, cm_bone, cm_cool, cm_spring, cm_plasma;
+
+  cv::applyColorMap(gray, cm_autumn, cv::COLORMAP_AUTUMN);
+  cv::applyColorMap(gray, cm_bone, cv::COLORMAP_BONE);
+  cv::applyColorMap(gray, cm_cool, cv::COLORMAP_COOL);
+  cv::applyColorMap(gray, cm_spring, cv::COLORMAP_SPRING);
+  cv::applyColorMap(gray, cm_plasma, cv::COLORMAP_PLASMA);
+
+  cv::imwrite("frutas_autumn.png", cm_autumn);
+  cv::imwrite("frutas_bone.png", cm_bone);
+  cv::imwrite("frutas_cool.png", cm_cool);
+  cv::imwrite("frutas_spring.png", cm_spring);
+  cv::imwrite("frutas_plasma.png", cm_plasma);
+
+  // 4. Criação de Colormap Personalizado via Look-Up Table (LUT)
+  cv::Mat custom_lut(256, 1, CV_8UC3);
+
+  for (int i = 0; i &lt; 256; i++) {
+    uchar b = cv::saturate_cast&lt;uchar&gt;(255 - i);
+    uchar g = cv::saturate_cast&lt;uchar&gt;(i &lt; 128 ? i * 2 : 255 - (i - 128) * 2);
+    uchar r = cv::saturate_cast&lt;uchar&gt;(i);
+
+    custom_lut.at&lt;cv::Vec3b&gt;(i, 0) = cv::Vec3b(b, g, r);
+  }
+
+  cv::Mat cm_custom;
+  cv::applyColorMap(gray, cm_custom, custom_lut);
+  cv::imwrite("frutas_custom.png", cm_custom);
+
+  std::cout &lt;&lt; "Sucesso! Imagens geradas." &lt;&lt; std::endl;
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 6. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_bgr_planes.png" alt="Canais BGR" width="384"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_hsv_planes.png" alt="Canais HSV" width="384"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Canais BGR (Azul | Verde | Vermelho)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Canais HSV (Matiz | Saturação | Valor)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_autumn.png" alt="Autumn" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_bone.png" alt="Bone" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_cool.png" alt="Cool" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(c) <code>COLORMAP_AUTUMN</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(d) <code>COLORMAP_BONE</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(e) <code>COLORMAP_COOL</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_spring.png" alt="Spring" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_plasma.png" alt="Plasma" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorspace/frutas_custom.png" alt="Custom LUT" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(f) <code>COLORMAP_SPRING</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(g) <code>COLORMAP_PLASMA</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(h) Colormap Personalizado (LUT BGR)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Decomposição BGR vs. HSV:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A separação dos canais BGR mostra a contribuição luminosa direta de cada cor primária. No espaço HSV, o canal H (<strong>Hue</strong>) codifica o tom puro da cor das frutas (como o vermelho dos morangos e o amarelo/verde das uvas e bananas), independente da iluminação, enquanto S (<strong>Saturation</strong>) e V (<strong>Value</strong>) isolam a vivacidade e o brilho.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Funcionamento dos Colormaps e da LUT Customizada:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A função <code>cv::applyColorMap()</code> mapeia valores de intensidade de 0 a 255 para uma paleta tricolor BGR.</p>
+</li>
+<li>
+<p>A LUT customizada de dimensão 256 X 1 do tipo <code>CV_8UC3</code> constrói um gradiente contínuo:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Azul (B = 255 - i):</strong> Predomina nas regiões de sombra e tons baixos.</p>
+</li>
+<li>
+<p><strong>Verde (G):</strong> Possui curva triangular com pico central em i = 128, destacando tons médios.</p>
+</li>
+<li>
+<p><strong>Vermelho (R = i):</strong> Cresce linearmente até atingir o máximo nos pontos de alta luminância.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Essa distribuição transiciona suavemente do azul frio (sombras) ao vermelho/amarelo quente (brilhos), aumentando o contraste percebido na cena das frutas.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap8">7. Capítulo 8: Seleção de cores e segmentação interativa</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 8</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Seleção Interativa de Pixels por Pintura com o Rato</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é estender a funcionalidade do programa <code>colorrange.cpp</code>, substituindo a seleção por caixa delimitadora (<code>cv::Rect</code>) por uma <strong>pintura interativa</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Nesta abordagem, o utilizador pode desenhar diretamente sobre a imagem para indicar quais pixels devem fazer parte da amostragem de cor:
+* <strong>Botão Esquerdo do Rato:</strong> Adiciona pixels à área de amostragem (pinta a região).
+* <strong>Botão Direito do Rato:</strong> Remove pixels da área de amostragem (apaga a região).</p>
+</div>
+<div class="paragraph">
+<p>À medida que a seleção é alterada, o programa recalcula em tempo real a média (<code>mean</code>) e o desvio padrão (<code>stddev</code>) dos canais BGR para os pixels selecionados. Em seguida, os limites da função <code>cv::inRange()</code> e as <strong>trackbars</strong> de tolerância são atualizados dinamicamente, permitindo segmentar regiões com geometrias e tonalidades complexas.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>paint_colorrange.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+cv::Mat image, display_img, selection_mask, mask;
+bool drawing = false;
+int brush_type = 0; // 1: adicionar (botão esquerdo), -1: remover (botão direito)
+int brush_size = 8;
+
+cv::Scalar average(128, 128, 128);
+cv::Scalar stdev(0, 0, 0);
+
+int rangeR = 0;
+int rangeG = 0;
+int rangeB = 0;
+
+void update_segmentation() {
+  if (cv::countNonZero(selection_mask) &gt; 0) {
+    cv::meanStdDev(image, average, stdev, selection_mask);
+
+    rangeB = cv::saturate_cast&lt;int&gt;(3 * stdev[0]);
+    rangeG = cv::saturate_cast&lt;int&gt;(3 * stdev[1]);
+    rangeR = cv::saturate_cast&lt;int&gt;(3 * stdev[2]);
+
+    cv::setTrackbarPos("R-range", "Image", rangeR);
+    cv::setTrackbarPos("G-range", "Image", rangeG);
+    cv::setTrackbarPos("B-range", "Image", rangeB);
+  }
+
+  cv::Scalar lower_bound(
+      std::max(0.0, average[0] - rangeB),
+      std::max(0.0, average[1] - rangeG),
+      std::max(0.0, average[2] - rangeR));
+
+  cv::Scalar upper_bound(
+      std::min(255.0, average[0] + rangeB),
+      std::min(255.0, average[1] + rangeG),
+      std::min(255.0, average[2] + rangeR));
+
+  cv::inRange(image, lower_bound, upper_bound, mask);
+}
+
+void on_trackbar_R(int value, void*) { rangeR = value; update_segmentation(); }
+void on_trackbar_G(int value, void*) { rangeG = value; update_segmentation(); }
+void on_trackbar_B(int value, void*) { rangeB = value; update_segmentation(); }
+
+static void onMouse(int event, int x, int y, int flags, void*) {
+  if (event == cv::EVENT_LBUTTONDOWN) {
+    drawing = true;
+    brush_type = 1;
+  } else if (event == cv::EVENT_RBUTTONDOWN) {
+    drawing = true;
+    brush_type = -1;
+  } else if (event == cv::EVENT_LBUTTONUP || event == cv::EVENT_RBUTTONUP) {
+    drawing = false;
+    brush_type = 0;
+  }
+
+  if (drawing) {
+    uchar color = (brush_type == 1) ? 255 : 0;
+    cv::circle(selection_mask, cv::Point(x, y), brush_size, cv::Scalar(color), -1);
+    update_segmentation();
+  }
+}
+
+int main(int argc, const char** argv) {
+  std::string filename = (argc &gt; 1) ? argv[1] : "../PlayStation_Move.png";
+  image = cv::imread(filename, cv::IMREAD_COLOR);
+
+  if (image.empty()) {
+    std::cerr &lt;&lt; "Erro ao abrir a imagem: " &lt;&lt; filename &lt;&lt; std::endl;
+    return -1;
+  }
+
+  selection_mask = cv::Mat::zeros(image.size(), CV_8UC1);
+  mask = cv::Mat::zeros(image.size(), CV_8UC1);
+
+  cv::namedWindow("Image", cv::WINDOW_AUTOSIZE);
+  cv::namedWindow("Pintura da Selecao", cv::WINDOW_AUTOSIZE);
+  cv::namedWindow("Segmentacao (inRange)", cv::WINDOW_AUTOSIZE);
+
+  cv::createTrackbar("R-range", "Image", &amp;rangeR, 255, on_trackbar_R);
+  cv::createTrackbar("G-range", "Image", &amp;rangeG, 255, on_trackbar_G);
+  cv::createTrackbar("B-range", "Image", &amp;rangeB, 255, on_trackbar_B);
+  cv::setMouseCallback("Image", onMouse, nullptr);
+
+  for (;;) {
+    image.copyTo(display_img);
+
+    cv::Mat overlay;
+    image.copyTo(overlay);
+    overlay.setTo(cv::Scalar(255, 128, 0), selection_mask);
+    cv::addWeighted(overlay, 0.5, display_img, 0.5, 0, display_img);
+
+    cv::imshow("Image", display_img);
+    cv::imshow("Pintura da Selecao", selection_mask);
+    cv::imshow("Segmentacao (inRange)", mask);
+
+    char c = (char)cv::waitKey(20);
+    if (c == 27) break;
+    if (c == 'c' || c == 'C') {
+      selection_mask = cv::Mat::zeros(image.size(), CV_8UC1);
+      average = cv::Scalar(128, 128, 128);
+      stdev = cv::Scalar(0, 0, 0);
+      rangeR = rangeG = rangeB = 0;
+      cv::setTrackbarPos("R-range", "Image", 0);
+      cv::setTrackbarPos("G-range", "Image", 0);
+      cv::setTrackbarPos("B-range", "Image", 0);
+      mask = cv::Mat::zeros(image.size(), CV_8UC1);
+    }
+  }
+
+  cv::imwrite("PlayStation_Move_pintura_selecao.png", selection_mask);
+  cv::imwrite("PlayStation_Move_segmentada.png", mask);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 7. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorrange/PlayStation_Move.png" alt="Imagem Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorrange/PlayStation_Move_pintura_selecao.png" alt="Máscara de Pintura" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="colorrange/PlayStation_Move_segmentada.png" alt="Resultado da Segmentação" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem Original (<code>PlayStation_Move.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Pintura da Seleção (Amostragem)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(c) Segmentação em Tempo Real (<code>inRange</code>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Flexibilidade da Pintura Interativa:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>O método de seleção retangular original limita a amostragem a regiões geométricas simples. A pintura livre permite isolar objetos não convexos ou distribuídos em múltiplos pontos da imagem com contornos arbitrários.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Cálculo da Amostragem com Máscara:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A utilização do overload <code>cv::meanStdDev(image, average, stdev, selection_mask)</code> assegura que apenas os pixels pintados contribuam para as estatísticas dos canais BGR.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Controlo da Tolerância:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A definição automática do intervalo como 3 X \(sigma\) captura aproximadamente 99,7% das variações de cor dentro da amostra. O utilizador pode ajustar manualmente as <strong>trackbars</strong> ou utilizar o botão direito do rato para apagar pontos com reflexos de iluminação que ampliem excessivamente o desvio padrão.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap9">8. Capítulo 9: Combinação de imagens</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 9</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Efeito Light Painting a partir de Sequência de Vídeo</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é aplicar técnicas de <strong>combinação de imagens</strong> para recriar o efeito fotográfico de <strong>light painting</strong> utilizando uma sequência de quadros extraída de um vídeo. A técnica consiste em acumular os pontos de maior luminância ao longo da sequência temporal, destacando trajetórias luminosas num ambiente escuro.</p>
+</div>
+<div class="paragraph">
+<p>Para o processamento, é utilizado o ficheiro de vídeo <code>teste_light_painting.mp4</code>. À medida que os quadros são lidos iterativamente utilizando a classe <code>cv::VideoCapture</code>, duas operações do Capítulo 9 são aplicadas de forma acumulativa:
+* <strong>Combinação por Máximo (<code>cv::max</code>):</strong> Compara cada pixel do acumulador com o quadro atual e preserva o valor de maior intensidade. Mantém os traços de luz bem definidos sem saturar o fundo.
+* <strong>Operação Lógica OU (<code>cv::bitwise_or</code>):</strong> Realiza a combinação binária bit a bit dos pixels do acumulador e do quadro atual, realçando rapidamente qualquer pixel que se acenda ao longo do tempo.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>light_painting.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  // Abre o arquivo de vídeo informado ou utiliza o padrao
+  std::string video_path = (argc &gt; 1) ? argv[1] : "teste_light_painting.mp4";
+
+  cv::VideoCapture cap(video_path);
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir o arquivo de video: " &lt;&lt; video_path &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat frame, frame_gray;
+  cap &gt;&gt; frame;
+  if (frame.empty()) {
+    std::cerr &lt;&lt; "O video nao contem frames validos." &lt;&lt; std::endl;
+    return -1;
+  }
+
+  // Converte o primeiro frame para tons de cinza para servir de base
+  cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+
+  // Inicializa os acumuladores para cada metodo de combinacao
+  cv::Mat light_painting_max = frame_gray.clone();
+  cv::Mat light_painting_or  = frame_gray.clone();
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) {
+      break; // Fim da leitura do video
+    }
+
+    // Converte o frame atual para tons de cinza
+    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+
+    // Combinacao 1: cv::max (Retem a maior intensidade de pixel)
+    cv::max(light_painting_max, frame_gray, light_painting_max);
+
+    // Combinacao 2: cv::bitwise_or (Operacao logica OU bit a bit)
+    cv::bitwise_or(light_painting_or, frame_gray, light_painting_or);
+  }
+
+  // Exibe as janelas com os resultados finais
+  cv::imshow("Light Painting - cv::max", light_painting_max);
+  cv::imshow("Light Painting - cv::bitwise_or", light_painting_or);
+
+  // Salva os resultados em arquivo de imagem
+  cv::imwrite("resultado_light_painting_max.png", light_painting_max);
+  cv::imwrite("resultado_light_painting_or.png", light_painting_or);
+
+  std::cout &lt;&lt; "Processamento concluido! Imagens salvas com sucesso." &lt;&lt; std::endl;
+
+  cv::waitKey(0);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 8. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="combinacao/resultado_light_painting_max.png" alt="Light Painting Max" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="combinacao/resultado_light_painting_or.png" alt="Light Painting Bitwise OR" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Resultado da combinação via <code>cv::max</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Resultado da combinação via <code>cv::bitwise_or</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Diferenças entre <code>cv::max</code> e <code>cv::bitwise_or</code>:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A função <code>cv::max</code> opera diretamente nos valores numéricos dos níveis de cinza (0–255), garantindo que as gradações de iluminação e contornos da luz fiquem suaves e contínuos.</p>
+</li>
+<li>
+<p>A operação <code>cv::bitwise_or</code> atua na representação binária de cada pixel. Em dados de 8 bits em escala de cinza, o agrupamento de bits pode gerar pequenos artefatos em regiões com variações sutis de tom, embora seja extremamente eficiente para destacar qualquer ocorrência de luz sobre o fundo escuro.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Desempenho no Processamento de Vídeo:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Ao acumular o resultado quadro a quadro sem armazenar todos os frames em memória RAM, o programa mantém uma pegada de memória constante durante todo o processamento do arquivo <code>.mp4</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap10">9. Capítulo 10: Decomposição em planos de bits e esteganografia</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 10</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Decodificação de Imagem Esteganografada</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O objetivo deste exercício é implementar o processo inverso da esteganografia em planos de bits. Dada uma imagem contendo outra oculta em seus bits menos significativos (como a imagem <code>desafio-esteganografia.png</code>), o programa deve extrair os nbits (no caso, 3 bits) menos significativos de cada pixel e deslocá-los 8 - nbits posições para a esquerda.</p>
+</div>
+<div class="paragraph">
+<p>Desta forma, a informação oculta passa a ocupar os bits mais significativos da nova imagem, tornando o conteúdo recuperado visível na escala de brilho completa.</p>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>esteganografia-recuperar.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  if (argc &lt; 2) {
+    std::cout &lt;&lt; "Uso: " &lt;&lt; argv[0] &lt;&lt; " &lt;imagem_codificada.png&gt;" &lt;&lt; std::endl;
+    return -1;
+  }
+
+  // Carrega a imagem codificada vinda da linha de comando
+  cv::Mat imagemEsteganografada = cv::imread(argv[1], cv::IMREAD_COLOR);
+
+  if (imagemEsteganografada.empty()) {
+    std::cout &lt;&lt; "Erro ao carregar a imagem: " &lt;&lt; argv[1] &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat imagemRecuperada = imagemEsteganografada.clone();
+  cv::Vec3b valEsteg, valRec;
+
+  int nbits = 3; // Numero de bits ocultos na codificacao
+
+  for (int i = 0; i &lt; imagemEsteganografada.rows; i++) {
+    for (int j = 0; j &lt; imagemEsteganografada.cols; j++) {
+      valEsteg = imagemEsteganografada.at&lt;cv::Vec3b&gt;(i, j);
+
+      // Desloca os LSBs para os MSBs em cada canal BGR
+      for (int c = 0; c &lt; 3; c++) {
+        valRec[c] = (valEsteg[c] &lt;&lt; (8 - nbits)) &amp; 0xFF;
+      }
+
+      imagemRecuperada.at&lt;cv::Vec3b&gt;(i, j) = valRec;
+    }
+  }
+
+  // Exibe e salva o resultado da imagem oculta recuperada
+  cv::imshow("Imagem Recuperada", imagemRecuperada);
+  cv::imwrite("imagem_recuperada.png", imagemRecuperada);
+
+  std::cout &lt;&lt; "Imagem recuperada com sucesso!" &lt;&lt; std::endl;
+  cv::waitKey(0);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 9. Resultados Obtidos</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="bitplanes/desafio-esteganografia.png" alt="Imagem Codificada" width="300" height="400"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="bitplanes/imagem_recuperada.png" alt="Imagem Recuperada" width="300" height="400"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem Resultante da Esteganografia (<code>desafio-esteganografia.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Imagem Oculta Extraída (<code>imagem_recuperada.png</code>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Recuperação de Informação Oculta:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A operação de bitshift à esquerda (<code>&lt;&lt; 5</code>) move os 3 bits menos significativos da imagem portadora para as posições mais significativas (MSB) da imagem final.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Qualidade e Perda de Resolução de Tonalidade:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Como a imagem oculta foi armazenada utilizando apenas 3 bits por canal de cor, a imagem recuperada possui no máximo 2^3 = 8 níveis de tonalidades por canal, o que gera uma pequena quantização visível (efeito de posterização/falso contorno), embora o conteúdo principal permaneça perfeitamente reconhecível.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap11">10. Capítulo 11: Preenchimento de regiões</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 11</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Limitação do Algoritmo de Rotulação</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>No programa <code>labeling.cpp</code>, o valor do contador de objetos é atribuído diretamente aos pixels da imagem em escala de cinza de 8 bits (<code>CV_8UC1</code>). Como essa estrutura suporta apenas valores no intervalo [0, 255], se a cena contiver mais de 255 objetos, o 256º objeto provocará um <strong>overflow</strong> de tipo, reiniciando o rótulo em 0. Isso faz com que objetos subsequentes sejam interpretados como fundo, corrompendo o processo de rotulação.</p>
+</div>
+<div class="paragraph">
+<div class="title">Solução Proposta</div>
+<p>Para solucionar a limitação:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Converter a matriz de trabalho para uma profundidade de 16 ou 32 bits (<code>CV_32SC1</code>), permitindo rotular até 2^{31}-1 objetos distintos.</p>
+</li>
+<li>
+<p>Utilizar a função <code>cv::connectedComponents()</code>, que já lida nativamente com matrizes de rótulos de 32 bits inteiros.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>=== Exercício 2: Contagem de Bolhas com e sem Buracos Internos</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Aprimorar o algoritmo de contagem para:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Ignorar e remover todas as bolhas que tocam as bordas da imagem (sem pressupor se possuem ou não buracos).</p>
+</li>
+<li>
+<p>Classificar e contar separadamente as bolhas que possuem <strong>um ou mais buracos internos</strong> e as que <strong>não possuem buracos</strong>.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>labeling.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  std::string filename = (argc &gt; 1) ? argv[1] : "..\\bolhas.png";
+  cv::Mat image = cv::imread(filename, cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cerr &lt;&lt; "Erro ao carregar a imagem: " &lt;&lt; filename &lt;&lt; std::endl;
+    return -1;
+  }
+
+  int width = image.cols;
+  int height = image.rows;
+
+  // 1. Eliminar bolhas que tocam as bordas da imagem
+  for (int j = 0; j &lt; width; j++) {
+    if (image.at&lt;uchar&gt;(0, j) == 255)
+      cv::floodFill(image, cv::Point(j, 0), 0);
+    if (image.at&lt;uchar&gt;(height - 1, j) == 255)
+      cv::floodFill(image, cv::Point(j, height - 1), 0);
+  }
+  for (int i = 0; i &lt; height; i++) {
+    if (image.at&lt;uchar&gt;(i, 0) == 255)
+      cv::floodFill(image, cv::Point(0, i), 0);
+    if (image.at&lt;uchar&gt;(i, width - 1) == 255)
+      cv::floodFill(image, cv::Point(width - 1, i), 0);
+  }
+
+  // 2. Preencher o fundo externo com a cor 1 para isolar o fundo dos buracos (que continua 0)
+  cv::floodFill(image, cv::Point(0, 0), 1);
+
+  int bolhas_sem_buraco = 0;
+  int bolhas_com_buraco = 0;
+
+  // 3. Rotulação preliminar das bolhas
+  for (int i = 0; i &lt; height; i++) {
+    for (int j = 0; j &lt; width; j++) {
+      if (image.at&lt;uchar&gt;(i, j) == 255) {
+        cv::floodFill(image, cv::Point(j, i), 254);
+      }
+    }
+  }
+
+  // 4. Identificação dos buracos (pixels com tom 0)
+  for (int i = 0; i &lt; height; i++) {
+    for (int j = 0; j &lt; width; j++) {
+      if (image.at&lt;uchar&gt;(i, j) == 0) {
+        cv::floodFill(image, cv::Point(j, i), 253);
+        if (j &gt; 0 &amp;&amp; image.at&lt;uchar&gt;(i, j - 1) == 254) {
+          cv::floodFill(image, cv::Point(j - 1, i), 252);
+        } else if (i &gt; 0 &amp;&amp; image.at&lt;uchar&gt;(i - 1, j) == 254) {
+          cv::floodFill(image, cv::Point(j, i - 1), 252);
+        }
+      }
+    }
+  }
+
+  // 5. Contagem final das bolhas sem buraco (254) e com buraco (252)
+  for (int i = 0; i &lt; height; i++) {
+    for (int j = 0; j &lt; width; j++) {
+      uchar val = image.at&lt;uchar&gt;(i, j);
+      if (val == 254) {
+        bolhas_sem_buraco++;
+        cv::floodFill(image, cv::Point(j, i), 100);
+      } else if (val == 252) {
+        bolhas_com_buraco++;
+        cv::floodFill(image, cv::Point(j, i), 200);
+      }
+    }
+  }
+
+  std::cout &lt;&lt; "--- Resultado do Processamento ---" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Total de bolhas validas: " &lt;&lt; (bolhas_sem_buraco + bolhas_com_buraco) &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Bolhas sem buracos: " &lt;&lt; bolhas_sem_buraco &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Bolhas com buracos: " &lt;&lt; bolhas_com_buraco &lt;&lt; std::endl;
+
+  cv::imwrite("resultado_labeling.png", image);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos</div>
+<p>Saída gerada no terminal durante a execução do algoritmo:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">--- Resultado do Processamento ---
+Total de bolhas validas: 21
+Bolhas sem buracos: 14
+Bolhas com buracos: 7</code></pre>
+</div>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="labeling/bolhas.png" alt="Imagem Original" width="256" height="256"></span></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><span class="image"><img src="labeling/resultado_labeling.png" alt="Resultado da Rotulação" width="256" height="256"></span></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(a) Imagem Original (<code>bolhas.png</code>)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">(b) Resultado Final do Processamento</p></td>
+</tr>
+</tbody>
+</table>
+<div class="olist arabic">
+<div class="title">Discussão e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Tratamento das Bordas:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>A eliminação das bolhas nas bordas garante a precisão do algoritmo, pois objetos cortados pelas margens poderiam ter buracos ocultos fora da área visível do frame.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Separação de Fundos:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Alterar a cor do fundo de 0 para 1 permite distinguir o fundo geral dos buracos internos de forma precisa, já que qualquer pixel com valor 0 remanescente após o primeiro <code>floodFill</code> pertence obrigatoriamente ao interior de uma bolha.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Análise Quantitativa:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Do conjunto total analisado na cena, 11 bolhas conectadas às bordas foram totalmente eliminadas sem contagem prévia.</p>
+</li>
+<li>
+<p>Das <strong>21 bolhas válidas</strong> restantes, o algoritmo classificou corretamente <strong>14 bolhas sem buracos</strong> (preenchidas em tom de cinza intermediário) e <strong>7 bolhas com buracos</strong> (preenchidas em tom de cinza mais claro).</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap12">11. Capítulo 11: Histogramas e Aplicações</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 11</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Equalização de Histograma em Tempo Real (<code>equalize.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Desenvolver um programa em C++ e OpenCV que capture frames continuamente a partir de uma fonte de vídeo ou câmera em escala de cinza e realize a equalização do histograma antes de exibir a imagem final. O objetivo é avaliar a redistribuição de luminância e o ganho de contraste em ambientes com iluminações variadas e desafiadoras (subexposição ou superexposição).</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Capturar o frame da câmera/vídeo e convertê-lo para escala de cinza de 8 bits (<code>CV_8UC1</code>) via <code>cv::cvtColor()</code>.</p>
+</li>
+<li>
+<p>Aplicar a equalização de histograma na matriz de tons de cinza utilizando a função <code>cv::equalizeHist()</code>.</p>
+</li>
+<li>
+<p>Calcular e plotar lado a lado os histogramas das imagens <strong>Original</strong> e <strong>Equalizada</strong> (utilizando 64 <strong>bins</strong>) para permitir a comparação quantitativa do perfil de distribuição de intensidades.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>equalize.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+void drawHistogram(const cv::Mat&amp; hist, cv::Mat&amp; histImg, cv::Scalar color) {
+  histImg.setTo(cv::Scalar(0, 0, 0));
+  int nbins = hist.rows;
+  int histh = histImg.rows;
+
+  cv::Mat histNorm;
+  cv::normalize(hist, histNorm, 0, histh, cv::NORM_MINMAX, -1, cv::Mat());
+
+  for (int i = 0; i &lt; nbins; i++) {
+    cv::line(histImg,
+             cv::Point(i, histh),
+             cv::Point(i, histh - cvRound(histNorm.at&lt;float&gt;(i))),
+             color, 1, 8, 0);
+  }
+}
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc &gt; 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir a fonte de video/camera." &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray, equalized;
+  cv::Mat histOriginal, histEqualized;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float* histrange = {range};
+
+  int histw = nbins;
+  int histh = nbins / 2;
+  cv::Mat histImgOrig(histh, histw, CV_8UC3, cv::Scalar(0, 0, 0));
+  cv::Mat histImgEq(histh, histw, CV_8UC3, cv::Scalar(0, 0, 0));
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::equalizeHist(gray, equalized);
+
+    cv::calcHist(&amp;gray, 1, 0, cv::Mat(), histOriginal, 1, &amp;nbins, &amp;histrange, true, false);
+    cv::calcHist(&amp;equalized, 1, 0, cv::Mat(), histEqualized, 1, &amp;nbins, &amp;histrange, true, false);
+
+    drawHistogram(histOriginal, histImgOrig, cv::Scalar(0, 255, 255));
+    drawHistogram(histEqualized, histImgEq, cv::Scalar(0, 255, 0));
+
+    cv::Mat displayOrig, displayEq;
+    cv::cvtColor(gray, displayOrig, cv::COLOR_GRAY2BGR);
+    cv::cvtColor(equalized, displayEq, cv::COLOR_GRAY2BGR);
+
+    histImgOrig.copyTo(displayOrig(cv::Rect(0, 0, histw, histh)));
+    histImgEq.copyTo(displayEq(cv::Rect(0, 0, histw, histh)));
+
+    cv::imshow("Original (Cinza)", displayOrig);
+    cv::imshow("Equalizada", displayEq);
+
+    if (cv::waitKey(30) == 27) break;
+  }
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="ulist">
+<div class="title">Resultados Obtidos e Análise</div>
+<ul>
+<li>
+<p><strong>Redistribuição de Luminância (Ambiente Muito Iluminado):</strong> Em cenas superexpostas, onde a maioria dos pixels está concentrada na extremidade superior da escala de cinza (próximo de 255), a função de distribuição acumulada estica esses valores claros ao longo de todo o espectro [0, 255], forçando o reapeamento de parte das intensidades para tons médios e escuros.</p>
+</li>
+<li>
+<p><strong>Aumento do Contraste e Detalhes:</strong> A expansão da faixa dinâmica permite destacar sutis variações de textura e contornos em regiões claras que antes pareciam "estouradas" ou uniformemente brancas.</p>
+</li>
+<li>
+<p><strong>Artefatos e Ruído de Quantização:</strong> Como as intensidades originais estavam comprimidas num intervalo muito estreito de tons claros, o estiramento pode causar descontinuidades visíveis no histograma (<strong>comb-like histogram</strong>) e evidenciar ruídos em áreas de transição suave.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>=== Exercício 2: Detector de Movimento Baseado em Histogramas (<code>motiondetector.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Implementar um sistema de detecção de movimento em tempo real que calcule continuamente o histograma dos frames capturados e o compare com o histograma do frame imediatamente anterior. Quando a métrica de divergência ultrapassar um limiar preestabelecido, um alarme visual deve ser acionado na interface.</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Calcular o histograma em escala de cinza para o frame atual e normalizá-lo para a faixa [0, 1].</p>
+</li>
+<li>
+<p>Comparar o histograma atual com o histograma do frame anterior utilizando a métrica Chi-Quadrado (<code>cv::HISTCMP_CHISQR</code>), via função <code>cv::compareHist()</code>.</p>
+</li>
+<li>
+<p>Caso a variação do histograma supere o limiar configurado (e.g., 50.0), desenhar um alerta visual (<code>ALARM: MOVIMENTO DETECTADO!</code>) e uma moldura de sinalização sobre a imagem.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>motiondetector.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc &gt; 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir a fonte de video/camera." &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray;
+  cv::Mat histAtual, histAnterior;
+  int nbins = 64;
+  float range[] = {0, 256};
+  const float* histrange = {range};
+
+  // Limiar de sensibilidade usando a metrica Chi-Quadrado
+  double threshold_chisqr = 50.0;
+  bool firstFrame = true;
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::calcHist(&amp;gray, 1, 0, cv::Mat(), histAtual, 1, &amp;nbins, &amp;histrange, true, false);
+    cv::normalize(histAtual, histAtual, 0, 1, cv::NORM_MINMAX, -1, cv::Mat());
+
+    if (!firstFrame) {
+      // Comparacao de histogramas usando Chi-Quadrado
+      double diff = cv::compareHist(histAtual, histAnterior, cv::HISTCMP_CHISQR);
+
+      if (diff &gt; threshold_chisqr) {
+        cv::putText(frame, "ALARM: MOVIMENTO DETECTADO!", cv::Point(20, 50),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 0, 255), 2);
+
+        cv::rectangle(frame, cv::Point(0, 0), cv::Point(frame.cols - 1, frame.rows - 1),
+                      cv::Scalar(0, 0, 255), 5);
+      }
+
+      std::cout &lt;&lt; "Diferenca de Histograma (Chi-Sqr): " &lt;&lt; diff &lt;&lt; std::endl;
+    } else {
+      firstFrame = false;
+    }
+
+    histAtual.clone().copyTo(histAnterior);
+
+    cv::imshow("Detector de Movimento", frame);
+
+    if (cv::waitKey(30) == 27) break;
+  }
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<div class="title">Resultados Obtidos e Análise</div>
+<ol class="arabic">
+<li>
+<p><strong>Escolha da Métrica:</strong> A distância Chi-Quadrado (<code>cv::HISTCMP_CHISQR</code>) mostrou-se bastante adequada para a detecção de movimento, pois atribui um peso significativamente maior a mudanças na distribuição de valores de pixels entre quadros consecutivos.</p>
+</li>
+<li>
+<p><strong>Robustez a Pequenas Oscilações:</strong> Ajustar o limiar para um valor adequado (como 50.0) evita que pequenas oscilações de iluminação global ou ruídos do sensor da câmera disparem falsos positivos.</p>
+</li>
+<li>
+<p><strong>Desempenho:</strong> Por comparar distribuições globais de 64 <strong>bins</strong> em vez de realizar operações pixel a pixel, a abordagem baseada em histograma consome pouquíssimo recurso computacional, sendo ideal para sistemas embarcados e monitoramento leve.</p>
+</li>
+</ol>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap13">12. Capítulo 13: Transformações Geométricas e Correção de Perspectiva</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 13</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Correção Interativa de Perspectiva (<code>registro.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Modificar o programa <code>registro.cpp</code> para permitir que o usuário defina interativamente, por meio de cliques do mouse na interface gráfica, os quatro pontos de canto de uma região de interesse retangular em perspectiva. O programa deve calcular a matriz de transformação homográfica correspondente e aplicar o retifamento ortogonal sobre a imagem (voltimetro.png).</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Registrar uma função callback de evento do mouse via <code>cv::setMouseCallback()</code> para armazenar as coordenadas bidimensionais dos cliques do usuário em ordem cronológica (superior-esquerdo, superior-direito, inferior-direito, inferior-esquerdo).</p>
+</li>
+<li>
+<p>Desenhar marcações visuais (círculos e numeração) na tela a cada clique para guiar a interação.</p>
+</li>
+<li>
+<p>Após a seleção dos 4 pontos, estimar a largura e altura máximas do quadrilátero selecionado com a norma euclidiana (<code>cv::norm()</code>), mapeando-os para uma matriz de destino plana [0, largura] X [0, altura].</p>
+</li>
+<li>
+<p>Obter a matriz de transformação de perspectiva com <code>cv::getPerspectiveTransform()</code> e projetar a imagem corrigida utilizando a função <code>cv::warpPerspective()</code>.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>registro.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+struct MouseData {
+  cv::Mat imgOriginal;
+  cv::Mat imgDisplay;
+  std::vector&lt;cv::Point2f&gt; srcPoints;
+};
+
+void onMouse(int event, int x, int y, int flags, void* userdata) {
+  MouseData* data = reinterpret_cast&lt;MouseData*&gt;(userdata);
+
+  if (event == cv::EVENT_LBUTTONDOWN) {
+    if (data-&gt;srcPoints.size() &lt; 4) {
+      cv::Point2f pt(x, y);
+      data-&gt;srcPoints.push_back(pt);
+
+      std::cout &lt;&lt; "Ponto " &lt;&lt; data-&gt;srcPoints.size() &lt;&lt; " selecionado: (" &lt;&lt; x &lt;&lt; ", " &lt;&lt; y &lt;&lt; ")" &lt;&lt; std::endl;
+
+      cv::circle(data-&gt;imgDisplay, pt, 5, cv::Scalar(0, 0, 255), -1);
+      cv::putText(data-&gt;imgDisplay, std::to_string(data-&gt;srcPoints.size()),
+                  cv::Point(x + 8, y + 8), cv::FONT_HERSHEY_SIMPLEX, 0.6,
+                  cv::Scalar(0, 255, 0), 2);
+
+      cv::imshow("Selecione 4 Pontos", data-&gt;imgDisplay);
+
+      if (data-&gt;srcPoints.size() == 4) {
+        float largura = cv::max(
+          cv::norm(data-&gt;srcPoints[0] - data-&gt;srcPoints[1]),
+          cv::norm(data-&gt;srcPoints[2] - data-&gt;srcPoints[3])
+        );
+
+        float altura = cv::max(
+          cv::norm(data-&gt;srcPoints[1] - data-&gt;srcPoints[2]),
+          cv::norm(data-&gt;srcPoints[3] - data-&gt;srcPoints[0])
+        );
+
+        std::cout &lt;&lt; "\nDimensoes calculadas:" &lt;&lt; std::endl;
+        std::cout &lt;&lt; "Largura: " &lt;&lt; largura &lt;&lt; " px" &lt;&lt; std::endl;
+        std::cout &lt;&lt; "Altura: " &lt;&lt; altura &lt;&lt; " px" &lt;&lt; std::endl;
+
+        std::vector&lt;cv::Point2f&gt; dstPoints;
+        dstPoints.push_back(cv::Point2f(0, 0));
+        dstPoints.push_back(cv::Point2f(largura, 0));
+        dstPoints.push_back(cv::Point2f(largura, altura));
+        dstPoints.push_back(cv::Point2f(0, altura));
+
+        cv::Mat perspectiveMatrix = cv::getPerspectiveTransform(data-&gt;srcPoints, dstPoints);
+
+        cv::Mat correctedImage;
+        cv::warpPerspective(data-&gt;imgOriginal, correctedImage, perspectiveMatrix, cv::Size(largura, altura));
+
+        cv::imshow("Imagem Corrigida", correctedImage);
+      }
+    }
+  }
+}
+
+int main(int argc, char** argv) {
+  std::string filename = (argc &gt; 1) ? argv[1] : "voltimetro.png";
+
+  MouseData data;
+  data.imgOriginal = cv::imread(filename);
+
+  if (data.imgOriginal.empty()) {
+    std::cerr &lt;&lt; "Erro ao carregar a imagem: " &lt;&lt; filename &lt;&lt; std::endl;
+    return -1;
+  }
+
+  data.imgDisplay = data.imgOriginal.clone();
+
+  std::cout &lt;&lt; "--- Instrucoes ---" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "1. Clique com o BOTAO ESQUERDO do mouse para selecionar 4 pontos na ordem:" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "   [1] Superior Esquerdo -&gt; [2] Superior Direito -&gt; [3] Inferior Direito -&gt; [4] Inferior Esquerdo" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "2. Pressione 'r' para resetar os pontos." &lt;&lt; std::endl;
+  std::cout &lt;&lt; "3. Pressione 'ESC' ou 'q' para sair." &lt;&lt; std::endl;
+
+  cv::namedWindow("Selecione 4 Pontos");
+  cv::setMouseCallback("Selecione 4 Pontos", onMouse, &amp;data);
+
+  cv::imshow("Selecione 4 Pontos", data.imgDisplay);
+
+  while (true) {
+    int key = cv::waitKey(30);
+    if (key == 27 || key == 'q' || key == 'Q') {
+      break;
+    } else if (key == 'r' || key == 'R') {
+      data.srcPoints.clear();
+      data.imgDisplay = data.imgOriginal.clone();
+      cv::imshow("Selecione 4 Pontos", data.imgDisplay);
+      cv::destroyWindow("Imagem Corrigida");
+      std::cout &lt;&lt; "\nPontos resetados. Selecione 4 novos pontos." &lt;&lt; std::endl;
+    }
+  }
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos e Análise</div>
+<p>Durante os testes interativos com a imagem do voltímetro (<code>voltimetro.png</code>), foram selecionados os seguintes vértices limitantes do mostrador:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Ponto 1 (Superior Esquerdo):</strong> (54, 81)</p>
+</li>
+<li>
+<p><strong>Ponto 2 (Superior Direito):</strong> (360, 58)</p>
+</li>
+<li>
+<p><strong>Ponto 3 (Inferior Direito):</strong> (354, 210)</p>
+</li>
+<li>
+<p><strong>Ponto 4 (Inferior Esquerdo):</strong> (46, 246)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>A partir desses vértices, a norma euclidiana calculou a escala proporcional da região para a projeção plana:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Largura Calculada:</strong> 310.097  px</p>
+</li>
+<li>
+<p><strong>Altura Calculada:</strong> 165.194  px</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>As figuras abaixo ilustram a imagem original com os 4 pontos selecionados interativamente pelo usuário e a imagem final resultante do processo de retificação homográfica:</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="registro/voltimetro_pontos.png" alt="Imagem Original Selecionada" width="400">
+</div>
+<div class="title">Figure 1. Imagem original com a seleção dos 4 pontos</div>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="registro/Imagem_Corrigida.png" alt="Imagem Corrigida" width="400">
+</div>
+<div class="title">Figure 2. Imagem com perspectiva corrigida</div>
+</div>
+<div class="paragraph">
+<p>A matriz de transformação estimada por <code>cv::getPerspectiveTransform()</code> permitiu retificar com precisão o ângulo de visão inclinado do painel do voltímetro. O resultado gerou uma visão frontal ortogonal perfeita do mostrador digital, eliminando as distorções trapezoidais causadas pela perspectiva original da foto.</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap14">13. Capítulo 14: Filtragem no Domínio do Espaço I</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 14</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Variação do Tamanho da Máscara no Filtro da Média (<code>convolucao2.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Com base no programa <code>convolucao.cpp</code>, implementar o programa <code>convolucao2.cpp</code> para realizar o mascaramento e a filtragem no domínio do espaço utilizando o filtro da média com máscaras quadradas de dimensões 11 X 11 e 21 X 21 pixels. O objetivo é comparar analiticamente e visualmente os resultados obtidos em relação ao filtro padrão de tamanho 3 X 3 pixels.</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Implementar uma estrutura interativa que permita alternar dinamicamente as dimensões da máscara do filtro da média (3 X 3, 11 X 11 e 21 X 21) durante a captura contínua de frames.</p>
+</li>
+<li>
+<p>Construir a matriz kernel de ponto flutuante K_{N X N} cujos elementos valem 1 / N^2, garantindo o ganho unitário e a preservação do brilho médio da imagem.</p>
+</li>
+<li>
+<p>Executar a convolução espacial via <code>cv::filter2D()</code> sobre a imagem em escala de cinza e analisar a atenuação de frequências espaciais elevadas em função do aumento da janela do kernel.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>convolucao2.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+void printMenu() {
+  std::cout &lt;&lt; "\n=== MENU FILTRO DA MEDIA ===" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "Teclas disponiveis para alterar a mascara:" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "1 - Mascara da Media 3x3" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "2 - Mascara da Media 11x11" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "3 - Mascara da Media 21x21" &lt;&lt; std::endl;
+  std::cout &lt;&lt; "ESC - Sair" &lt;&lt; std::endl;
+}
+
+int main(int argc, char** argv) {
+  cv::VideoCapture cap;
+
+  if (argc &gt; 1) {
+    cap.open(argv[1]);
+  } else {
+    cap.open(0, cv::CAP_DSHOW);
+  }
+
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir a camera ou ficheiro de video." &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+  cv::Mat frame, gray, result;
+  int maskSize = 3;
+
+  printMenu();
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) break;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::Mat mask = cv::Mat::ones(maskSize, maskSize, CV_32F) / (float)(maskSize * maskSize);
+
+    cv::filter2D(gray, result, CV_32F, mask);
+    result.convertTo(result, CV_8U);
+
+    std::string text = "Filtro da Media: " + std::to_string(maskSize) + "x" + std::to_string(maskSize);
+    cv::putText(result, text, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255), 2);
+
+    cv::imshow("Original (Cinza)", gray);
+    cv::imshow("Filtrada (Convolucao)", result);
+
+    char key = (char)cv::waitKey(30);
+    if (key == 27) break;
+
+    switch (key) {
+      case '1':
+        maskSize = 3;
+        std::cout &lt;&lt; "Mascara alterada para 3x3" &lt;&lt; std::endl;
+        break;
+      case '2':
+        maskSize = 11;
+        std::cout &lt;&lt; "Mascara alterada para 11x11" &lt;&lt; std::endl;
+        break;
+      case '3':
+        maskSize = 21;
+        std::cout &lt;&lt; "Mascara alterada para 21x21" &lt;&lt; std::endl;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos e Análise</div>
+<p>O filtro da média atua como um filtro passa-baixas no domínio da frequência espacial. À medida que o tamanho da máscara N X N aumenta, amplia-se a região de vizinhança integrada para a média local de cada pixel:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Mascara 3 X 3:</strong> Remove ruídos de alta frequência pontuais (como ruído sal e pimenta) mantendo a nitidez geral e contornos bem definidos.</p>
+</li>
+<li>
+<p><strong>Mascara 11 X 11:</strong> Produz um efeito de borramento (<strong>blurring</strong>) acentuado, eliminando detalhes finos e suavizando bordas proeminentes.</p>
+</li>
+<li>
+<p><strong>Mascara 21 X 21:</strong> Provoca forte desfoque na cena, transformando objetos pequenos em borrões homogêneos e espalhando a transição de intensidade ao longo de grandes extensões de pixels.</p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p>=== Exercício 2: Correção de Profundidade de Campo com Filtro Laplaciano (<code>depthoffield.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>O efeito de profundidade de campo faz com que apenas objetos em determinado plano focal permaneçam nítidos em uma cena, deixando regiões anteriores ou posteriores desfocadas. O objetivo é implementar o programa <code>depthoffield.cpp</code> para processar uma sequência de vídeo (e.g., <code>vasos720p.mp4</code>) com variação de foco e reconstruir uma única imagem final colorida com foco estendido (onde todos os objetos fiquem focados simultaneamente).</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Iterar quadro a quadro sobre a sequência de vídeo e converter cada frame colorido para escala de cinza.</p>
+</li>
+<li>
+<p>Aplicar um filtro diferencial Laplaciano 3 X 3 (derivada de segunda ordem) sobre o frame em escala de cinza para medir a taxa de variação de alta frequência (nitidez e riqueza de bordas).</p>
+</li>
+<li>
+<p>Manter e atualizar continuamente uma matriz acumuladora com os maiores valores do módulo Laplaciano observados pixel a pixel ao longo do vídeo.</p>
+</li>
+<li>
+<p>Sempre que o valor Laplaciano do pixel atual for estritamente superior ao valor contido na matriz de máximos, substituir o pixel da imagem de saída pelo pixel colorido BGR do frame correspondente.</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>depthoffield.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int main(int argc, char** argv) {
+  std::string videoPath = (argc &gt; 1) ? argv[1] : "vasos720p.mp4";
+  cv::VideoCapture cap(videoPath);
+
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir o video: " &lt;&lt; videoPath &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::Mat frame, gray, laplacian, laplacianAbs, laplacianDisplay;
+  cv::Mat maxLaplacian;
+  cv::Mat focusImage;
+
+  float laplacianMask[3][3] = {
+    {-1, -1, -1},
+    {-1,  8, -1},
+    {-1, -1, -1}
+  };
+  cv::Mat mask = cv::Mat(3, 3, CV_32F, laplacianMask);
+
+  bool initialized = false;
+  int frameCount = 0;
+
+  std::cout &lt;&lt; "Processando frames do video..." &lt;&lt; std::endl;
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) break;
+
+    frameCount++;
+
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::filter2D(gray, laplacian, CV_32F, mask);
+
+    laplacianAbs = cv::abs(laplacian);
+
+    if (!initialized) {
+      maxLaplacian = laplacianAbs.clone();
+      focusImage = frame.clone();
+      initialized = true;
+      continue;
+    }
+
+    for (int r = 0; r &lt; frame.rows; r++) {
+      for (int c = 0; c &lt; frame.cols; c++) {
+        float currentVal = laplacianAbs.at&lt;float&gt;(r, c);
+        float maxVal = maxLaplacian.at&lt;float&gt;(r, c);
+
+        if (currentVal &gt; maxVal) {
+          maxLaplacian.at&lt;float&gt;(r, c) = currentVal;
+          focusImage.at&lt;cv::Vec3b&gt;(r, c) = frame.at&lt;cv::Vec3b&gt;(r, c);
+        }
+      }
+    }
+
+    cv::normalize(laplacianAbs, laplacianDisplay, 0, 255, cv::NORM_MINMAX, CV_8U);
+
+    cv::imshow("Frame Original do Video", frame);
+    cv::imshow("Imagem em Tons de Cinza", gray);
+    cv::imshow("Resposta Laplaciana (Frame Atual)", laplacianDisplay);
+    cv::imshow("Foco Estendido (Saida Final Colorida)", focusImage);
+
+    if (cv::waitKey(1) == 27) break;
+  }
+
+  std::cout &lt;&lt; "Processamento concluido (" &lt;&lt; frameCount &lt;&lt; " frames analisados)." &lt;&lt; std::endl;
+
+  cv::Mat maxLaplacianDisplay;
+  cv::normalize(maxLaplacian, maxLaplacianDisplay, 0, 255, cv::NORM_MINMAX, CV_8U);
+
+  cv::imwrite("resultado_foco_estendido.png", focusImage);
+  cv::imwrite("resultado_laplaciano_maximo.png", maxLaplacianDisplay);
+
+  cv::imshow("Mapa Acumulado de Laplacianos Maximos", maxLaplacianDisplay);
+  cv::imshow("Foco Estendido (Saida Final Colorida)", focusImage);
+  cv::waitKey(0);
+
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos e Análise</div>
+<p>Como o operador Laplaciano é um filtro derivativo de segunda ordem, ele responde com altas amplitudes nas transições abruptas de intensidade (bordas e detalhes finos), que correspondem exatamente às regiões focadas de um frame.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>O mapa acumulado de máximos do Laplaciano (<code>resultado_laplaciano_maximo.png</code>) funciona como um mapa de relevo da nitidez da cena, destacando em tom claro os pixels onde o foco atingiu o valor ideal ao longo da gravação.</p>
+</li>
+<li>
+<p>A imagem colorida composta (<code>resultado_foco_estendido.png</code>) consolida as melhores porções de cada frame, eliminando o efeito de variação de profundidade de campo e entregando uma cena uniformemente focada em todos os planos do espaço.</p>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 10. Mapa acumulado do operador Laplaciano e imagem final reconstruída</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><div class="content"><div class="imageblock">
+<div class="content">
+<img src="convolucao/resultado_laplaciano_maximo.png" alt="Mapa de Maximos" width="320">
+</div>
+<div class="title">Figure 3. Mapa de Máximos Laplacianos</div>
+</div></div></td>
+<td class="tableblock halign-center valign-top"><div class="content"><div class="imageblock">
+<div class="content">
+<img src="convolucao/resultado_foco_estendido.png" alt="Foco Estendido" width="320">
+</div>
+<div class="title">Figure 4. Resultado Final de Foco Estendido</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="cap15">14. Capítulo 15: Filtragem no Domínio do Espaço II (Efeito Tilt-Shift)</h2>
+<div class="sectionbody">
+<details>
+<summary class="title">Clique para expandir os exercícios do Capítulo 15</summary>
+<div class="content">
+<div class="paragraph">
+<p>=== Exercício 1: Tilt-Shift em Imagem Estática (<code>tiltshift.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Implementar o programa <code>tiltshift.cpp</code> para simular o efeito de miniaturização (<strong>tilt-shift</strong>) em uma imagem estática. A interface deve fornecer três barras de ajuste (<strong>trackbars</strong>) para regulagem interativa dos seguintes parâmetros:
+* Altura da região central em foco (h);
+* Força de decaimento da transição borrada (delta);
+* Posição vertical do centro da região em foco (y_0).</p>
+</div>
+<div class="paragraph">
+<p>Ao finalizar os ajustes, a imagem gerada com o efeito aplicado deve ser salva em disco.</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Gerar uma versão borrada da imagem de entrada utilizando um filtro Gaussiano (<code>cv::GaussianBlur()</code>).</p>
+</li>
+<li>
+<p>Criar uma máscara de ponderação $a(x)$ baseada na diferença entre duas funções de tangente hiperbólica (sigmóide):</p>
+<div class="stemblock">
+<div class="content">
+\[a(x) = \frac{1}{2} \left[ \tanh\left(\frac{x - y_0 + h/2}{\delta}\right) - \tanh\left(\frac{x - y_0 - h/2}{\delta}\right) \right]\]
+</div>
+</div>
+</li>
+<li>
+<p>Realizar a mistura ponderada (<strong>blending</strong>) pixel a pixel entre a imagem original \(I_{orig}\) e a imagem borrada \(I_{blur}\) conforme a equação:</p>
+<div class="stemblock">
+<div class="content">
+\[I_{res} = a \cdot I_{orig} + (1 - a) \cdot I_{blur}\]
+</div>
+</div>
+</li>
+<li>
+<p>Atualizar a imagem exibida dinamicamente a cada alteração nas <strong>trackbars</strong> e salvar o resultado final em arquivo (<code>tiltshift_resultado.png</code>).</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>tiltshift.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;cmath&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+int height_slider = 20;
+int height_slider_max = 100;
+int decay_slider = 10;
+int decay_slider_max = 100;
+int pos_slider = 50;
+int pos_slider_max = 100;
+
+cv::Mat imageOriginal, imageBlurred, imageResult;
+
+void processTiltShift() {
+  int rows = imageOriginal.rows;
+  int cols = imageOriginal.cols;
+
+  double h = (height_slider / (double)height_slider_max) * rows;
+  double y0 = (pos_slider / (double)pos_slider_max) * rows;
+  double delta = decay_slider + 1.0;
+
+  cv::Mat alpha = cv::Mat::zeros(rows, cols, CV_32FC3);
+
+  for (int r = 0; r &lt; rows; r++) {
+    double val = 0.5 * (std::tanh((r - y0 + h / 2.0) / delta) - std::tanh((r - y0 - h / 2.0) / delta));
+    for (int c = 0; c &lt; cols; c++) {
+      alpha.at&lt;cv::Vec3f&gt;(r, c) = cv::Vec3f(val, val, val);
+    }
+  }
+
+  cv::Mat imgOrigFloat, imgBlurFloat, resultFloat;
+  imageOriginal.convertTo(imgOrigFloat, CV_32FC3);
+  imageBlurred.convertTo(imgBlurFloat, CV_32FC3);
+
+  cv::Mat alphaInverse = cv::Scalar(1.0, 1.0, 1.0) - alpha;
+  resultFloat = imgOrigFloat.mul(alpha) + imgBlurFloat.mul(alphaInverse);
+
+  resultFloat.convertTo(imageResult, CV_8UC3);
+  cv::imshow("Efeito Tilt-Shift", imageResult);
+}
+
+void on_trackbar(int, void*) {
+  processTiltShift();
+}
+
+int main(int argc, char** argv) {
+  std::string filename = (argc &gt; 1) ? argv[1] : "por-do-sol-ponta-negra.png";
+  imageOriginal = cv::imread(filename);
+
+  if (imageOriginal.empty()) {
+    std::cerr &lt;&lt; "Erro ao abrir a imagem: " &lt;&lt; filename &lt;&lt; std::endl;
+    return -1;
+  }
+
+  cv::GaussianBlur(imageOriginal, imageBlurred, cv::Size(21, 21), 0);
+
+  cv::namedWindow("Efeito Tilt-Shift", cv::WINDOW_NORMAL);
+  cv::resizeWindow("Efeito Tilt-Shift", 800, 600);
+
+  cv::createTrackbar("Altura Foco (h)", "Efeito Tilt-Shift", &amp;height_slider, height_slider_max, on_trackbar);
+  cv::createTrackbar("Decaimento (delta)", "Efeito Tilt-Shift", &amp;decay_slider, decay_slider_max, on_trackbar);
+  cv::createTrackbar("Posicao Vert (y0)", "Efeito Tilt-Shift", &amp;pos_slider, pos_slider_max, on_trackbar);
+
+  processTiltShift();
+
+  while (true) {
+    char k = (char)cv::waitKey(30);
+    if (k == 27) break;
+    if (k == 's' || k == 'S') {
+      cv::imwrite("tiltshift_resultado.png", imageResult);
+      std::cout &lt;&lt; "Imagem salva como 'tiltshift_resultado.png'!" &lt;&lt; std::endl;
+    }
+  }
+
+  cv::imwrite("tiltshift_resultado.png", imageResult);
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos e Análise</div>
+<p>A aplicação da máscara sigmóide permite uma transição suave entre a região nitidamente focada na faixa central e o desfoque progressivo nas extremidades superior e inferior. Esse efeito simula a ilusão de uma profundidade de campo extremamente reduzida, típica de fotografias <strong>macro</strong> de maquetes e miniaturas.</p>
+</div>
+<table class="tableblock frame-none grid-none stretch">
+<caption class="title">Table 11. Comparação entre a imagem original e o processamento Tilt-Shift</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><div class="content"><div class="imageblock">
+<div class="content">
+<img src="tiltshift/por-do-sol-ponta-negra.png" alt="Imagem Original" width="320">
+</div>
+<div class="title">Figure 5. Imagem Original (<code>por-do-sol-ponta-negra.png</code>)</div>
+</div></div></td>
+<td class="tableblock halign-center valign-top"><div class="content"><div class="imageblock">
+<div class="content">
+<img src="tiltshift/tiltshift_resultado.png" alt="Tilt-Shift Aplicado" width="320">
+</div>
+<div class="title">Figure 6. Resultado Com Efeito Tilt-Shift (<code>tiltshift_resultado.png</code>)</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<div class="paragraph">
+<p>=== Exercício 2: Tilt-Shift em Vídeo com Efeito Stop Motion (<code>tiltshiftvideo.cpp</code>)</p>
+</div>
+<div class="paragraph">
+<div class="title">Descrição do Problema</div>
+<p>Implementar o programa <code>tiltshiftvideo.cpp</code> capaz de processar um arquivo de vídeo (e.g., <code>Natal.mp4</code>), aplicar o efeito de <strong>tilt-shift</strong> em cada um dos quadros e gravar o resultado final em um arquivo de vídeo de saída. Para simular a estética de maquetes em movimento, deve-se aplicar o descarte controlado de quadros, gerando o efeito de <strong>stop motion</strong>.</p>
+</div>
+<div class="olist arabic">
+<div class="title">Solução Proposta</div>
+<ol class="arabic">
+<li>
+<p>Carregar o vídeo de entrada utilizando a classe <code>cv::VideoCapture</code> e configurar o renderizador <code>cv::VideoWriter</code> com o codec de compressão adequado.</p>
+</li>
+<li>
+<p>Criar uma rotina otimizada de cálculo de máscara de peso $a(x)$, pré-calculando o vetor unidimensional das linhas para acelerar o processamento em tempo real do fluxo de vídeo.</p>
+</li>
+<li>
+<p>Estabelecer um fator de amostragem temporal (descarte de quadros $N$), processando apenas 1 a cada $N$ quadros capturados e duplicando-os na gravação para preservar a taxa de atualização (FPS) mantendo o aspecto travado característico de animações em <strong>stop motion</strong>.</p>
+</li>
+<li>
+<p>Gravar o vídeo processado no arquivo de saída (<code>tiltshift_stopmotion.mp4</code>).</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="title">Código Fonte (<code>tiltshiftvideo.cpp</code>)</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-cpp hljs" data-lang="cpp">#include &lt;iostream&gt;
+#include &lt;cmath&gt;
+#include &lt;string&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+
+cv::Mat applyTiltShift(const cv::Mat &amp;frameOrig, double h_ratio, double delta_val, double y0_ratio) {
+  int rows = frameOrig.rows;
+  int cols = frameOrig.cols;
+
+  double h = h_ratio * rows;
+  double y0 = y0_ratio * rows;
+  double delta = delta_val;
+
+  cv::Mat frameBlurred;
+  cv::GaussianBlur(frameOrig, frameBlurred, cv::Size(21, 21), 0);
+
+  cv::Mat alpha1D(rows, 1, CV_32F);
+  for (int r = 0; r &lt; rows; r++) {
+    alpha1D.at&lt;float&gt;(r, 0) = 0.5f * (std::tanh((r - y0 + h / 2.0) / delta) - std::tanh((r - y0 - h / 2.0) / delta));
+  }
+
+  cv::Mat alpha2D;
+  cv::repeat(alpha1D, 1, cols, alpha2D);
+
+  cv::Mat alpha;
+  cv::Mat channels[] = {alpha2D, alpha2D, alpha2D};
+  cv::merge(channels, 3, alpha);
+
+  cv::Mat origFloat, blurFloat, resultFloat, resultByte;
+  frameOrig.convertTo(origFloat, CV_32FC3);
+  frameBlurred.convertTo(blurFloat, CV_32FC3);
+
+  cv::Mat alphaInverse = cv::Scalar(1.0, 1.0, 1.0) - alpha;
+  resultFloat = origFloat.mul(alpha) + blurFloat.mul(alphaInverse);
+
+  resultFloat.convertTo(resultByte, CV_8UC3);
+  return resultByte;
+}
+
+int main(int argc, char** argv) {
+  std::string inputVideo = (argc &gt; 1) ? argv[1] : "Natal.mp4";
+  std::string outputVideo = "tiltshift_stopmotion.mp4";
+
+  double h_ratio = 0.30;
+  double delta_val = 12.0;
+  double y0_ratio = 0.50;
+  int frameSkip = 3;
+
+  cv::VideoCapture cap(inputVideo);
+  if (!cap.isOpened()) {
+    std::cerr &lt;&lt; "Erro ao abrir o video: " &lt;&lt; inputVideo &lt;&lt; std::endl;
+    return -1;
+  }
+
+  int width = static_cast&lt;int&gt;(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+  int height = static_cast&lt;int&gt;(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+  double origFps = cap.get(cv::CAP_PROP_FPS);
+
+  int fourcc = cv::VideoWriter::fourcc('m', 'p', '4', 'v');
+  cv::VideoWriter writer(outputVideo, fourcc, origFps, cv::Size(width, height));
+
+  cv::Mat frame, processedFrame;
+  int frameCount = 0;
+
+  while (true) {
+    cap &gt;&gt; frame;
+    if (frame.empty()) break;
+
+    if (frameCount % frameSkip == 0) {
+      processedFrame = applyTiltShift(frame, h_ratio, delta_val, y0_ratio);
+
+      for (int i = 0; i &lt; frameSkip; i++) {
+        writer.write(processedFrame);
+      }
+    }
+    frameCount++;
+  }
+
+  cap.release();
+  writer.release();
+  return 0;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Resultados Obtidos e Análise</div>
+<p>O descarte periódico de quadros (<code>frameSkip = 3</code>) associado à preservação da velocidade de reprodução altera a percepção do movimento contínuo da cena real, aproximando-se da fluidez de modelos reduzidos e maquetes animadas manualmente. A aplicação sequencial do filtro de <strong>tilt-shift</strong> em cada frame reforça o isolamento óptico do elemento de interesse no plano focal central durante a execução do vídeo.</p>
+</div>
+<div class="videoblock">
+<div class="title">Resultado do Vídeo com Efeito Tilt-Shift e Stop Motion (<code>tiltshift_stopmotion.mp4</code>)</div>
+<div class="content">
+<video src="tiltshift/tiltshift_stopmotion_browser.mp4" width="640" autoplay controls loop>
+Your browser does not support the video tag.
+</video>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-10-03 10:55:04 -0300
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code[data-lang]')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  messageStyle: "none",
+  tex2jax: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]],
+    ignoreClass: "nostem|nolatexmath"
+  },
+  asciimath2jax: {
+    delimiters: [["\\$", "\\$"]],
+    ignoreClass: "nostem|noasciimath"
+  },
+  TeX: { equationNumbers: { autoNumber: "none" } }
+})
+MathJax.Hub.Register.StartupHook("AsciiMath Jax Ready", function () {
+  MathJax.InputJax.AsciiMath.postfilterHooks.Add(function (data, node) {
+    if ((node = data.script.parentNode) && (node = node.parentNode) && node.classList.contains("stemblock")) {
+      data.math.root.display = "block"
+    }
+    return data
+  })
+})
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+[[cap4]]
+== Capítulo 4: Visualização de imagens
+
+.Clique para expandir os exercícios do Capítulo 4
+[%collapsible]
+====
+=== Exercício 1: Geração de Dados para Perfil de Iluminação em 3D
+
+.Descrição do Problema
+O objetivo deste exercício é extrair a matriz de intensidades de luminância e um perfil de linha horizontal de imagens de entrada (`sementes1.png` e `sementes2.png`) utilizando o programa `visualizacao.cpp`. 
+
+Os arquivos de saída gerados (`matriz.txt` e `line.txt`) são posteriormente processados pelo programa **Gnuplot** para gerar renderizações tridimensionais (mapas de superfície/iluminação) e gráficos de perfil de linha em 2D.
+
+.Código Fonte (`visualizacao.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <fstream>
+#include <opencv2/opencv.hpp>
+
+int main(int argc, char** argv) {
+  if (argc < 2) {
+    std::cout << "Uso: ./visualizacao <caminho_da_imagem>" << std::endl;
+    return -1;
+  }
+
+  cv::Mat image = cv::imread(argv[1], cv::IMREAD_GRAYSCALE);
+
+  if (image.empty()) {
+    std::cout << "Erro ao carregar a imagem!" << std::endl;
+    return -1;
+  }
+
+  std::ofstream fmatriz("matriz.txt");
+  std::ofstream fline("line.txt");
+
+  if (!fmatriz.is_open() || !fline.is_open()) {
+    std::cout << "Erro ao criar os arquivos de saída!" << std::endl;
+    return -1;
+  }
+
+  int mid_row = image.rows / 2;
+
+  for (int i = 0; i < image.rows; i++) {
+    for (int j = 0; j < image.cols; j++) {
+      int val = static_cast<int>(image.at<uchar>(i, j));
+      
+      fmatriz << val << (j == image.cols - 1 ? "" : " ");
+      
+      if (i == mid_row) {
+        fline << j << " " << val << "\n";
+      }
+    }
+    fmatriz << "\n";
+  }
+
+  fmatriz.close();
+  fline.close();
+
+  std::cout << "Arquivos matriz.txt e line.txt gerados com sucesso para " << argv[1] << std::endl;
+
+  return 0;
+}
+----
+
+.Scripts do Gnuplot
+Para a renderização dos gráficos, utilize os seguintes scripts no terminal do Gnuplot:
+
+* **Gerar Superfície 3D (`plot3d.gp`):**
+[source,gnuplot]
+----
+set title "Perfil 3D de Intensidades Luminosas"
+set xlabel "Colunas (X)"
+set ylabel "Linhas (Y)"
+set zlabel "Intensidade"
+set hidden3d
+set dgrid3d 100,100
+splot 'matriz.txt' matrix with lines
+----
+
+* **Gerar Perfil 2D da Linha Central (`plot2d.gp`):**
+[source,gnuplot]
+----
+set title "Perfil de Linha Central"
+set xlabel "Coluna (X)"
+set ylabel "Intensidade"
+plot 'line.txt' with lines title "Linha Central"
+----
+
+.Resultados Obtidos e Comparação
+[cols="1,1", frame=none, grid=none]
+|===
+| image:visualizacao/sementes1.png[Sementes 1, 256, 256]
+| image:visualizacao/sementes2.png[Sementes 2, 256, 256]
+
+^| (a) Imagem `sementes1.png` 
+^| (b) Imagem `sementes2.png` 
+|===
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:visualizacao/plot3d_sementes1.png[Perfil 3D Sementes 1, 300, 250]
+| image:visualizacao/plot3d_sementes2.png[Perfil 3D Sementes 2, 300, 250]
+
+^| (c) Superfície 3D de `sementes1.png`
+^| (d) Superfície 3D de `sementes2.png`
+|===
+
+[cols="1,1", frame=none, grid=none]
+|===
+| image:visualizacao/plot2d_sementes1.png[Perfil 2D Sementes 1, 300, 250]
+| image:visualizacao/plot2d_sementes2.png[Perfil 2D Sementes 2, 300, 250]
+
+^| (e) Perfil de linha central de `sementes1.png`
+^| (f) Perfil de linha central de `sementes2.png`
+|===
+
+.Discussão e Análise da Iluminação das Cenas
+A comparação entre as superfícies 3D e os perfis de linha em 2D revela detalhes fundamentais sobre a distribuição de intensidade e os artefatos de iluminação em cada cena:
+
+1. **Análise de `sementes1.png`:**
+   * **Comportamento do Fundo:** O plano de fundo é predominantemente claro e uniforme, mantendo um nível de luminância elevado em torno de 190 a 200 ao longo de toda a extensão da imagem.
+   * **Perfil das Sementes:** Como as sementes são objetos escuros sobre fundo claro, elas são representadas nos gráficos por **vales/poços de intensidade** bem definidos, onde a luminância cai abruptamente para valores próximos de 40 a 50.
+   * **Perfil 2D (`plot2d_sementes1.png`):** A linha de base do fundo permanece praticamente horizontal e plana (alta frequência nos vales das sementes sobre uma componente contínua de fundo estável), o que demonstra que a cena possui iluminação frontal homogênea.
+
+2. **Análise de `sementes2.png`:**
+   * **Efeito de Vinheta (Vignetting) e Iluminação Não Uniforme:** A superfície 3D e o perfil de linha 2D revelam uma acentuada curvatura parabólica no nível de fundo. A intensidade do background atinge seu ponto máximo no centro da imagem (~150) e cai progressivamente em direção às bordas (~100), caracterizando uma iluminação centralizada ou atenuação periférica de lente (vinhetagem).
+   * **Perfil das Sementes:** As sementes continuam aparecendo como vales de menor intensidade (descendo até ~20–30), porém o nível absoluto de seus mínimos varia conforme a posição horizontal na cena devido ao gradiente do fundo.
+   * **Impacto no Processamento:** No perfil 2D (`plot2d_sementes2.png`), fica claro que a escolha de um único limiar global (por exemplo, limiar fixo em 120) falharia na binarização: ele cortaria o fundo nas extremidades da imagem e confundiria o background escuro com as sementes. Essa cena exige técnicas de correção de iluminação (subtração de fundo/estimador de iluminação) ou limiarização adaptativa local.
+====

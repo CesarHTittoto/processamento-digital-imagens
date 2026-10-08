@@ -1,0 +1,146 @@
+[[cap13]]
+== Capítulo 13: Transformações Geométricas e Correção de Perspectiva
+
+.Clique para expandir os exercícios do Capítulo 13
+[%collapsible]
+====
+=== Exercício 1: Correção Interativa de Perspectiva (`registro.cpp`)
+
+.Descrição do Problema
+Modificar o programa `registro.cpp` para permitir que o usuário defina interativamente, por meio de cliques do mouse na interface gráfica, os quatro pontos de canto de uma região de interesse retangular em perspectiva. O programa deve calcular a matriz de transformação homográfica correspondente e aplicar o retifamento ortogonal sobre a imagem (voltimetro.png).
+
+.Solução Proposta
+1. Registrar uma função callback de evento do mouse via `cv::setMouseCallback()` para armazenar as coordenadas bidimensionais dos cliques do usuário em ordem cronológica (superior-esquerdo, superior-direito, inferior-direito, inferior-esquerdo).
+2. Desenhar marcações visuais (círculos e numeração) na tela a cada clique para guiar a interação.
+3. Após a seleção dos 4 pontos, estimar a largura e altura máximas do quadrilátero selecionado com a norma euclidiana (`cv::norm()`), mapeando-os para uma matriz de destino plana [0, largura] X [0, altura].
+4. Obter a matriz de transformação de perspectiva com `cv::getPerspectiveTransform()` e projetar a imagem corrigida utilizando a função `cv::warpPerspective()`.
+
+.Código Fonte (`registro.cpp`)
+[source,cpp]
+----
+#include <iostream>
+#include <vector>
+#include <opencv2/opencv.hpp>
+
+struct MouseData {
+  cv::Mat imgOriginal;
+  cv::Mat imgDisplay;
+  std::vector<cv::Point2f> srcPoints;
+};
+
+void onMouse(int event, int x, int y, int flags, void* userdata) {
+  MouseData* data = reinterpret_cast<MouseData*>(userdata);
+
+  if (event == cv::EVENT_LBUTTONDOWN) {
+    if (data->srcPoints.size() < 4) {
+      cv::Point2f pt(x, y);
+      data->srcPoints.push_back(pt);
+
+      std::cout << "Ponto " << data->srcPoints.size() << " selecionado: (" << x << ", " << y << ")" << std::endl;
+
+      cv::circle(data->imgDisplay, pt, 5, cv::Scalar(0, 0, 255), -1);
+      cv::putText(data->imgDisplay, std::to_string(data->srcPoints.size()), 
+                  cv::Point(x + 8, y + 8), cv::FONT_HERSHEY_SIMPLEX, 0.6, 
+                  cv::Scalar(0, 255, 0), 2);
+      
+      cv::imshow("Selecione 4 Pontos", data->imgDisplay);
+
+      if (data->srcPoints.size() == 4) {
+        float largura = cv::max(
+          cv::norm(data->srcPoints[0] - data->srcPoints[1]),
+          cv::norm(data->srcPoints[2] - data->srcPoints[3])
+        );
+
+        float altura = cv::max(
+          cv::norm(data->srcPoints[1] - data->srcPoints[2]),
+          cv::norm(data->srcPoints[3] - data->srcPoints[0])
+        );
+
+        std::cout << "\nDimensoes calculadas:" << std::endl;
+        std::cout << "Largura: " << largura << " px" << std::endl;
+        std::cout << "Altura: " << altura << " px" << std::endl;
+
+        std::vector<cv::Point2f> dstPoints;
+        dstPoints.push_back(cv::Point2f(0, 0));
+        dstPoints.push_back(cv::Point2f(largura, 0));
+        dstPoints.push_back(cv::Point2f(largura, altura));
+        dstPoints.push_back(cv::Point2f(0, altura));
+
+        cv::Mat perspectiveMatrix = cv::getPerspectiveTransform(data->srcPoints, dstPoints);
+
+        cv::Mat correctedImage;
+        cv::warpPerspective(data->imgOriginal, correctedImage, perspectiveMatrix, cv::Size(largura, altura));
+
+        cv::imshow("Imagem Corrigida", correctedImage);
+      }
+    }
+  }
+}
+
+int main(int argc, char** argv) {
+  std::string filename = (argc > 1) ? argv[1] : "voltimetro.png";
+  
+  MouseData data;
+  data.imgOriginal = cv::imread(filename);
+
+  if (data.imgOriginal.empty()) {
+    std::cerr << "Erro ao carregar a imagem: " << filename << std::endl;
+    return -1;
+  }
+
+  data.imgDisplay = data.imgOriginal.clone();
+
+  std::cout << "--- Instrucoes ---" << std::endl;
+  std::cout << "1. Clique com o BOTAO ESQUERDO do mouse para selecionar 4 pontos na ordem:" << std::endl;
+  std::cout << "   [1] Superior Esquerdo -> [2] Superior Direito -> [3] Inferior Direito -> [4] Inferior Esquerdo" << std::endl;
+  std::cout << "2. Pressione 'r' para resetar os pontos." << std::endl;
+  std::cout << "3. Pressione 'ESC' ou 'q' para sair." << std::endl;
+
+  cv::namedWindow("Selecione 4 Pontos");
+  cv::setMouseCallback("Selecione 4 Pontos", onMouse, &data);
+
+  cv::imshow("Selecione 4 Pontos", data.imgDisplay);
+
+  while (true) {
+    int key = cv::waitKey(30);
+    if (key == 27 || key == 'q' || key == 'Q') {
+      break;
+    } else if (key == 'r' || key == 'R') {
+      data.srcPoints.clear();
+      data.imgDisplay = data.imgOriginal.clone();
+      cv::imshow("Selecione 4 Pontos", data.imgDisplay);
+      cv::destroyWindow("Imagem Corrigida");
+      std::cout << "\nPontos resetados. Selecione 4 novos pontos." << std::endl;
+    }
+  }
+
+  return 0;
+}
+----
+
+.Resultados Obtidos e Análise
+
+Durante os testes interativos com a imagem do voltímetro (`voltimetro.png`), foram selecionados os seguintes vértices limitantes do mostrador:
+
+* **Ponto 1 (Superior Esquerdo):** (54, 81)
+* **Ponto 2 (Superior Direito):** (360, 58)
+* **Ponto 3 (Inferior Direito):** (354, 210)
+* **Ponto 4 (Inferior Esquerdo):** (46, 246)
+
+
+A partir desses vértices, a norma euclidiana calculou a escala proporcional da região para a projeção plana:
+
+* **Largura Calculada:** 310.097  px
+
+* **Altura Calculada:** 165.194  px
+
+As figuras abaixo ilustram a imagem original com os 4 pontos selecionados interativamente pelo usuário e a imagem final resultante do processo de retificação homográfica:
+
+.Imagem original com a seleção dos 4 pontos
+image::registro/voltimetro_pontos.png[Imagem Original Selecionada, width=400, align="center"]
+
+.Imagem com perspectiva corrigida
+image::registro/Imagem_Corrigida.png[Imagem Corrigida, width=400, align="center"]
+
+A matriz de transformação estimada por `cv::getPerspectiveTransform()` permitiu retificar com precisão o ângulo de visão inclinado do painel do voltímetro. O resultado gerou uma visão frontal ortogonal perfeita do mostrador digital, eliminando as distorções trapezoidais causadas pela perspectiva original da foto.
+====
