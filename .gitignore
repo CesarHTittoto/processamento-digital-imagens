@@ -1,0 +1,10 @@
+# OpenCV e binarios compilados
+opencv/
+*.dll
+*.pdb
+*.exe
+*.o
+*.a
+*.lib
+*.so
+*.dylib
